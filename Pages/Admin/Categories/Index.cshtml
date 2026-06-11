@@ -1,0 +1,45 @@
+@page
+@model ECommerceFinalProject.Pages.Admin.Categories.IndexModel
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+    ViewData["ActivePage"] = "Categories";
+}
+
+<div class="page-header">
+    <h4><i class="bi bi-tags"></i> Quản lý danh mục</h4>
+    <a href="/Admin/Categories/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Thêm danh mục</a>
+</div>
+
+<div class="card shadow-sm table-admin">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên danh mục</th>
+                    <th>Mô tả</th>
+                    <th>Số sản phẩm</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Categories.Any())
+                {
+                    <tr><td colspan="5" class="text-center text-muted py-4">Chưa có danh mục nào.</td></tr>
+                }
+                @foreach (var cat in Model.Categories)
+                {
+                    <tr>
+                        <td>@cat.Id</td>
+                        <td class="fw-bold">@cat.Ten</td>
+                        <td class="text-muted">@(cat.MoTa ?? "—")</td>
+                        <td><span class="badge bg-info">@(cat.Products?.Count ?? 0) SP</span></td>
+                        <td>
+                            <a href="/Admin/Categories/Edit?id=@cat.Id" class="btn btn-sm btn-outline-primary btn-action"><i class="bi bi-pencil"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

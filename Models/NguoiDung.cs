@@ -31,4 +31,8 @@ public class NguoiDung
 
     [MaxLength(255)]
     public string? Email { get; set; }
+
+    [MaxLength(20)]
+    [Display(Name = "Vai trò")]
+    public string VaiTro { get; set; } = "User";
 }

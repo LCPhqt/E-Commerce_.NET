@@ -1,0 +1,61 @@
+@page
+@model ECommerceFinalProject.Pages.Admin.Products.IndexModel
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    ViewData["ActivePage"] = "Products";
+}
+
+<div class="page-header">
+    <h4><i class="bi bi-box"></i> Quản lý sản phẩm</h4>
+    <a href="/Admin/Products/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Thêm sản phẩm</a>
+</div>
+
+<div class="card shadow-sm table-admin">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Hình ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá</th>
+                    <th>Tồn kho</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Products.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted py-4">Chưa có sản phẩm nào.</td></tr>
+                }
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <td>@product.Id</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(product.HinhAnhUrl))
+                            {
+                                <img src="@product.HinhAnhUrl" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted"><i class="bi bi-image"></i></span>
+                            }
+                        </td>
+                        <td class="fw-bold">@product.TenSanPham</td>
+                        <td>@product.DanhMuc?.Ten</td>
+                        <td>@product.Gia.ToString("N0")đ</td>
+                        <td>
+                            <span class="badge @(product.SoLuongTon > 0 ? "bg-success" : "bg-danger")">@product.SoLuongTon</span>
+                        </td>
+                        <td>
+                            <a href="/Admin/Products/Edit?id=@product.Id" class="btn btn-sm btn-outline-primary btn-action"><i class="bi bi-pencil"></i></a>
+                            <a href="/Admin/Products/Delete?id=@product.Id" class="btn btn-sm btn-outline-danger btn-action"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

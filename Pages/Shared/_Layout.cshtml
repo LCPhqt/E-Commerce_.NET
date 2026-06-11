@@ -10,22 +10,47 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="/">🛒 ECommerce</a>
-            <div class="ml-auto">
-                @if (User.Identity?.IsAuthenticated == true)
-                {
-                    <span class="navbar-text text-white me-3">Xin chào, @User.Identity.Name</span>
-                    <a href="/Account/Logout" class="btn btn-outline-light btn-sm">Đăng xuất</a>
-                }
-                else
-                {
-                    <a href="/Account/Login" class="btn btn-outline-light btn-sm me-2">Đăng nhập</a>
-                    <a href="/Account/Register" class="btn btn-light btn-sm">Đăng ký</a>
-                }
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Customer/Home"><i class="bi bi-shop"></i> Cửa hàng</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="/Admin/Dashboard" class="btn btn-warning btn-sm me-2">🔑 Admin</a>
+                        }
+                        <span class="navbar-text text-white me-3">👋 @User.FindFirst("FullName")?.Value</span>
+                        <a href="/Account/Logout" class="btn btn-outline-light btn-sm">Đăng xuất</a>
+                    }
+                    else
+                    {
+                        <a href="/Account/Login" class="btn btn-outline-light btn-sm me-2">Đăng nhập</a>
+                        <a href="/Account/Register" class="btn btn-light btn-sm">Đăng ký</a>
+                    }
+                </div>
             </div>
         </div>
     </nav>
     <main>
         @RenderBody()
     </main>
+    <script>
+        function fallbackImg(el) {
+            el.onerror = null;
+            el.style.display = 'none';
+            var placeholder = document.createElement('div');
+            placeholder.className = 'card-img-top d-flex align-items-center justify-content-center bg-light text-muted';
+            placeholder.style.minHeight = '220px';
+            placeholder.innerHTML = '<i class="bi bi-image" style="font-size: 48px;"></i>';
+            el.parentElement.insertBefore(placeholder, el.nextSibling);
+        }
+    </script>
 </body>
 </html>

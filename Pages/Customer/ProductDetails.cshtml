@@ -1,0 +1,160 @@
+@page
+@model ECommerceFinalProject.Pages.Customer.ProductDetailsModel
+@{
+    ViewData["Title"] = Model.Product?.TenSanPham ?? "Chi tiết sản phẩm";
+}
+
+@if (Model.Product == null)
+{
+    <div class="text-center py-5">
+        <i class="bi bi-exclamation-triangle" style="font-size: 64px; color: #ccc;"></i>
+        <p class="text-muted mt-3">Sản phẩm không tồn tại.</p>
+        <a href="/Customer/Products" class="btn btn-primary">Quay lại danh sách</a>
+    </div>
+}
+else
+{
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/Customer/Home">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="/Customer/Products">Sản phẩm</a></li>
+            @if (Model.Product.DanhMuc != null)
+            {
+                <li class="breadcrumb-item"><a href="/Customer/Products?categoryId=@Model.Product.DanhMucId">@Model.Product.DanhMuc.Ten</a></li>
+            }
+            <li class="breadcrumb-item active">@Model.Product.TenSanPham</li>
+        </ol>
+    </nav>
+
+    <!-- Main Product Detail -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="position-relative">
+                @if (!string.IsNullOrEmpty(Model.Product.HinhAnhUrl))
+                {
+                    <img src="@Model.Product.HinhAnhUrl" class="product-detail-img w-100" alt="@Model.Product.TenSanPham" onerror="fallbackImg(this)">
+                }
+                else
+                {
+                    <div class="product-detail-img w-100 d-flex align-items-center justify-content-center bg-light text-muted" style="min-height: 300px;">
+                        <i class="bi bi-image" style="font-size: 80px;"></i>
+                    </div>
+                }
+                @if (Model.Product.SoLuongTon == 0)
+                {
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-3" style="font-size: 1rem;">Hết hàng</span>
+                }
+                else if (Model.Product.SoLuongTon <= 5)
+                {
+                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-3" style="font-size: 1rem;">Sắp hết</span>
+                }
+                else
+                {
+                    <span class="badge bg-success position-absolute top-0 end-0 m-3" style="font-size: 1rem;">Còn hàng</span>
+                }
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h2 class="fw-bold">@Model.Product.TenSanPham</h2>
+            @if (Model.Product.DanhMuc != null)
+            {
+                <span class="category-badge mb-3">@Model.Product.DanhMuc.Ten</span>
+            }
+            <p class="price-display mt-3">@Model.Product.Gia.ToString("N0")đ</p>
+
+            <!-- Stock Status -->
+            <div class="mb-3">
+                @if (Model.Product.SoLuongTon > 0)
+                {
+                    <span class="text-success"><i class="bi bi-check-circle-fill"></i> Còn hàng</span>
+                    <span class="text-muted ms-3">(@Model.Product.SoLuongTon sản phẩm)</span>
+                }
+                else
+                {
+                    <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Tạm hết hàng</span>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Product.MoTa))
+            {
+                <div class="mb-4">
+                    <h5>Mô tả sản phẩm</h5>
+                    <p class="text-muted">@Model.Product.MoTa</p>
+                </div>
+            }
+
+            <!-- Actions -->
+            @if (User.Identity?.IsAuthenticated == true && Model.Product.SoLuongTon > 0)
+            {
+                <form method="post" asp-page="/Customer/Cart" asp-page-handler="Add" asp-route-productId="@Model.Product.Id">
+                    <div class="d-flex gap-2 align-items-center mb-3">
+                        <label class="fw-bold">Số lượng:</label>
+                        <input type="number" name="quantity" value="1" min="1" max="@Model.Product.SoLuongTon" class="form-control quantity-input" />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                            <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+                        </button>
+                        <a href="/Customer/Checkout?buyNow=@Model.Product.Id" class="btn btn-danger btn-lg">
+                            <i class="bi bi-lightning-fill"></i> Mua ngay
+                        </a>
+                    </div>
+                </form>
+            }
+            else if (User.Identity?.IsAuthenticated != true)
+            {
+                <a href="/Account/Login" class="btn btn-primary btn-lg w-100">
+                    <i class="bi bi-box-arrow-in-right"></i> Đăng nhập để mua hàng
+                </a>
+            }
+            else
+            {
+                <div class="alert alert-warning d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    Sản phẩm này hiện đã hết hàng.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    @if (Model.RelatedProducts.Any())
+    {
+        <section class="mb-5">
+            <h4 class="fw-bold mb-4"><i class="bi bi-link"></i> Sản phẩm liên quan</h4>
+            <div class="row g-4">
+                @foreach (var product in Model.RelatedProducts)
+                {
+                    <div class="col-6 col-md-3">
+                        <div class="card product-card shadow-sm">
+                            <div class="position-relative">
+                                @if (!string.IsNullOrEmpty(product.HinhAnhUrl))
+                                {
+                                    <img src="@product.HinhAnhUrl" class="card-img-top" alt="@product.TenSanPham" onerror="fallbackImg(this)">
+                                }
+                                else
+                                {
+                                    <div class="card-img-top d-flex align-items-center justify-content-center bg-light text-muted">
+                                        <i class="bi bi-image" style="font-size: 48px;"></i>
+                                    </div>
+                                }
+                                @if (product.SoLuongTon == 0)
+                                {
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">Hết hàng</span>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <p class="product-title">@product.TenSanPham</p>
+                                <p class="product-price">@product.Gia.ToString("N0")đ</p>
+                                <a href="/Customer/ProductDetails?id=@product.Id" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="bi bi-eye"></i> Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+}

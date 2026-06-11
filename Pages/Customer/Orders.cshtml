@@ -1,0 +1,60 @@
+@page
+@model ECommerceFinalProject.Pages.Customer.OrdersModel
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<h3 class="fw-bold mb-4"><i class="bi bi-clock-history"></i> Đơn hàng của tôi</h3>
+
+@if (!Model.Orders.Any())
+{
+    <div class="text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 64px; color: #ccc;"></i>
+        <p class="text-muted mt-3">Bạn chưa có đơn hàng nào.</p>
+        <a href="/Customer/Products" class="btn btn-primary"><i class="bi bi-bag"></i> Mua sắm ngay</a>
+    </div>
+}
+else
+{
+    @foreach (var order in Model.Orders)
+    {
+        <div class="order-card">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Đơn hàng #@order.Id</h5>
+                    <small class="text-muted">@order.NgayDat.ToString("dd/MM/yyyy HH:mm")</small>
+                </div>
+                <span class="status-badge
+                    @(order.TrangThai == "Chờ xử lý" ? "status-pending" :
+                      order.TrangThai == "Đang giao" ? "status-shipping" :
+                      order.TrangThai == "Đã giao" ? "status-delivered" :
+                      "status-cancelled")">
+                    @order.TrangThai
+                </span>
+            </div>
+
+            @if (order.OrderDetails != null)
+            {
+                @foreach (var detail in order.OrderDetails)
+                {
+                    <div class="d-flex justify-content-between align-items-center py-1">
+                        <span>@detail.TenSanPham <span class="text-muted">x@(detail.SoLuong)</span></span>
+                        <span>@((detail.SoLuong * detail.DonGia).ToString("N0"))đ</span>
+                    </div>
+                }
+            }
+
+            <hr class="my-2">
+            <div class="d-flex justify-content-between">
+                <span><strong>Địa chỉ:</strong> @order.DiaChiGiao</span>
+                <strong class="text-danger">Tổng: @order.TongTien.ToString("N0")đ</strong>
+            </div>
+            @if (!string.IsNullOrEmpty(order.GhiChu))
+            {
+                <div class="mt-2">
+                    <small class="text-muted"><strong>Ghi chú:</strong> @order.GhiChu</small>
+                </div>
+            }
+        </div>
+    }
+}

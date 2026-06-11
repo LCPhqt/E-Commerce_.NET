@@ -1,0 +1,85 @@
+@page
+@model ECommerceFinalProject.Pages.Customer.CartModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<h3 class="fw-bold mb-4"><i class="bi bi-cart"></i> Giỏ hàng của tôi</h3>
+
+@if (Model.CartItems == null || !Model.CartItems.Any())
+{
+    <div class="text-center py-5">
+        <i class="bi bi-cart-x" style="font-size: 64px; color: #ccc;"></i>
+        <p class="text-muted mt-3">Giỏ hàng trống.</p>
+        <a href="/Customer/Products" class="btn btn-primary"><i class="bi bi-bag"></i> Mua sắm ngay</a>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-lg-8">
+            @foreach (var item in Model.CartItems)
+            {
+                <div class="cart-item">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            @if (!string.IsNullOrEmpty(item.SanPham?.HinhAnhUrl))
+                            {
+                                <img src="@item.SanPham.HinhAnhUrl" class="cart-item-image" alt="@item.SanPham.TenSanPham" onerror="fallbackImg(this)">
+                            }
+                            else
+                            {
+                                <div class="cart-item-image d-flex align-items-center justify-content-center bg-light text-muted">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-4">
+                            <h6 class="fw-bold mb-1">@item.SanPham?.TenSanPham</h6>
+                            <small class="text-muted">@item.DonGia.ToString("N0")đ / sản phẩm</small>
+                        </div>
+                        <div class="col-3">
+                            <form method="post" asp-page="/Customer/Cart" asp-page-handler="UpdateQuantity" asp-route-cartItemId="@item.Id" class="d-flex align-items-center gap-2">
+                                <button type="submit" name="quantity" value="@(item.SoLuong - 1)" class="btn btn-outline-secondary btn-sm" @(item.SoLuong <= 1 ? "disabled" : "")>-</button>
+                                <span class="fw-bold mx-2">@item.SoLuong</span>
+                                <button type="submit" name="quantity" value="@(item.SoLuong + 1)" class="btn btn-outline-secondary btn-sm">+</button>
+                            </form>
+                        </div>
+                        <div class="col-2 text-end">
+                            <strong>@((item.SoLuong * item.DonGia).ToString("N0"))đ</strong>
+                        </div>
+                        <div class="col-1 text-end">
+                            <form method="post" asp-page="/Customer/Cart" asp-page-handler="Remove" asp-route-cartItemId="@item.Id">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Tổng giỏ hàng</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính:</span>
+                        <strong>@Model.Total.ToString("N0")đ</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="fw-bold">Tổng cộng:</span>
+                        <strong class="text-danger fs-5">@Model.Total.ToString("N0")đ</strong>
+                    </div>
+                    <a href="/Customer/Checkout" class="btn btn-primary w-100 btn-lg">
+                        <i class="bi bi-credit-card"></i> Thanh toán
+                    </a>
+                    <a href="/Customer/Products" class="btn btn-outline-primary w-100 mt-2">
+                        <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

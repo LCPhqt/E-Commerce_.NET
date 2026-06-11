@@ -45,10 +45,13 @@ public class LoginModel : PageModel
             return Page();
         }
 
+        var displayName = $"{user.Ho} {user.Ten}".Trim();
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.TenDangNhap),
-            new Claim(ClaimTypes.Name, $"{user.Ho} {user.Ten}".Trim()),
+            new Claim(ClaimTypes.Name, user.TenDangNhap),
+            new Claim("FullName", string.IsNullOrWhiteSpace(displayName) ? user.TenDangNhap : displayName),
+            new Claim(ClaimTypes.Role, user.VaiTro),
             new Claim("Email", user.Email ?? "")
         };
 

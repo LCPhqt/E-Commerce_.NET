@@ -1,0 +1,158 @@
+@page
+@model ECommerceFinalProject.Pages.Customer.ProductsModel
+@{
+    ViewData["Title"] = "Sản phẩm";
+    var startItem = Model.TotalCount > 0 ? (Model.PageIndex * Model.PageSize) + 1 : 0;
+    var endItem = Math.Min((Model.PageIndex + 1) * Model.PageSize, Model.TotalCount);
+}
+
+<h3 class="fw-bold mb-4"><i class="bi bi-box"></i> Tất cả sản phẩm</h3>
+
+<!-- Search + Sort + Category Filter -->
+<div class="row mb-4 align-items-center">
+    <div class="col-md-5 mb-2 mb-md-0">
+        <form method="get" class="d-flex">
+            @if (Model.SelectedCategoryId.HasValue)
+            {
+                <input type="hidden" name="categoryId" value="@Model.SelectedCategoryId" />
+            }
+            @if (!string.IsNullOrEmpty(Model.SortBy) && Model.SortBy != "newest")
+            {
+                <input type="hidden" name="sortBy" value="@Model.SortBy" />
+            }
+            <div class="input-group">
+                <input type="text" name="search" class="form-control search-box" placeholder="Tìm kiếm sản phẩm..." value="@Model.SearchQuery" />
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+                @if (!string.IsNullOrEmpty(Model.SearchQuery))
+                {
+                    <a href="@Url.Page("Products", new { categoryId = Model.SelectedCategoryId, sortBy = Model.SortBy != "newest" ? Model.SortBy : null })" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                }
+            </div>
+        </form>
+    </div>
+    <div class="col-md-3 mb-2 mb-md-0">
+        @{
+            var sortOptions = new[] {
+                new { Value = "newest", Label = "Mới nhất" },
+                new { Value = "price_asc", Label = "Giá: Thấp → Cao" },
+                new { Value = "price_desc", Label = "Giá: Cao → Thấp" },
+                new { Value = "name", Label = "Tên: A → Z" }
+            };
+        }
+        <select class="form-select" onchange="window.location.href='@Url.Page("Products")?categoryId=@Model.SelectedCategoryId&search=@Model.SearchQuery&sortBy='+this.value">
+            @foreach (var opt in sortOptions)
+            {
+                <option value="@opt.Value" selected="@(Model.SortBy == opt.Value ? "selected" : null)">@opt.Label</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+            <a href="/Customer/Products?sortBy=@Model.SortBy" class="category-badge @(!Model.SelectedCategoryId.HasValue ? "active" : "")">Tất cả</a>
+            @foreach (var cat in Model.Categories)
+            {
+                <a href="/Customer/Products?categoryId=@cat.Id&sortBy=@Model.SortBy" class="category-badge @(Model.SelectedCategoryId == cat.Id ? "active" : "")">@cat.Ten</a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Product Count -->
+@if (Model.TotalCount > 0)
+{
+    <p class="text-muted mb-3">
+        Hiển thị <strong>@startItem–@endItem</strong> của <strong>@Model.TotalCount</strong> sản phẩm
+    </p>
+}
+
+<!-- Product Grid -->
+@if (!Model.Products.Any())
+{
+    <div class="text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 64px; color: #ccc;"></i>
+        <p class="text-muted mt-3">Không tìm thấy sản phẩm nào.</p>
+        <a href="/Customer/Products" class="btn btn-primary">Xem tất cả sản phẩm</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="card product-card shadow-sm">
+                    <div class="position-relative">
+                        @if (!string.IsNullOrEmpty(product.HinhAnhUrl))
+                        {
+                            <img src="@product.HinhAnhUrl" class="card-img-top" alt="@product.TenSanPham" onerror="fallbackImg(this)">
+                        }
+                        else
+                        {
+                            <div class="card-img-top d-flex align-items-center justify-content-center bg-light text-muted">
+                                <i class="bi bi-image" style="font-size: 48px;"></i>
+                            </div>
+                        }
+                        @if (product.SoLuongTon == 0)
+                        {
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">Hết hàng</span>
+                        }
+                        else if (product.SoLuongTon <= 5)
+                        {
+                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">Sắp hết</span>
+                        }
+                    </div>
+                    <div class="card-body">
+                        <p class="product-title">@product.TenSanPham</p>
+                        <p class="product-price">@product.Gia.ToString("N0")đ</p>
+                        <div class="d-flex gap-2">
+                            <a href="/Customer/ProductDetails?id=@product.Id" class="btn btn-outline-primary btn-sm flex-grow-1">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            @if (User.Identity?.IsAuthenticated == true && product.SoLuongTon > 0)
+                            {
+                                <form method="post" asp-page="/Customer/Cart" asp-page-handler="Add" asp-route-productId="@product.Id">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </button>
+                                </form>
+                            }
+                            else if (User.Identity?.IsAuthenticated != true)
+                            {
+                                <a href="/Account/Login" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.PageIndex == 0 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Page("Products", new { categoryId = Model.SelectedCategoryId, search = Model.SearchQuery, sortBy = Model.SortBy != "newest" ? Model.SortBy : null, pageIndex = Model.PageIndex - 1 })">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                @for (int i = 0; i < Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                        <a class="page-link" href="@Url.Page("Products", new { categoryId = Model.SelectedCategoryId, search = Model.SearchQuery, sortBy = Model.SortBy != "newest" ? Model.SortBy : null, pageIndex = i })">@(i + 1)</a>
+                    </li>
+                }
+                <li class="page-item @(Model.PageIndex >= Model.TotalPages - 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Page("Products", new { categoryId = Model.SelectedCategoryId, search = Model.SearchQuery, sortBy = Model.SortBy != "newest" ? Model.SortBy : null, pageIndex = Model.PageIndex + 1 })">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}
