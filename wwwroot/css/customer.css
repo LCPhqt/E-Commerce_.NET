@@ -853,20 +853,100 @@ select.form-select-editorial:focus {
    Footer
    ============================================ */
 .footer-editorial {
-    background: var(--bg-card);
-    border-top: 1px solid var(--border-light);
-    padding: var(--space-lg) 0;
+    background: #1a1a1a;
     margin-top: var(--space-xl);
-    color: var(--text-secondary);
+    color: #a8a29e;
     font-family: var(--font-body);
     font-size: 0.85rem;
+    position: relative;
+}
+
+.footer-editorial .footer-accent {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), #d4a574 40%, transparent 80%);
+}
+
+.footer-editorial .footer-top {
+    padding: 3rem 0 2rem;
 }
 
 .footer-editorial .footer-brand {
     font-family: var(--font-display);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #f5f3ef;
+    letter-spacing: -0.02em;
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.footer-editorial .footer-tagline {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    color: #78716c;
+    margin: 0;
+    max-width: 280px;
+}
+
+.footer-editorial .footer-heading {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #d6d3d1;
+    margin-bottom: 1rem;
+}
+
+.footer-editorial .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-editorial .footer-links li + li {
+    margin-top: 0.5rem;
+}
+
+.footer-editorial .footer-links a {
+    color: #a8a29e;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s;
+}
+
+.footer-editorial .footer-links a:hover {
+    color: #f5f3ef;
+}
+
+.footer-editorial .footer-bottom {
+    border-top: 1px solid #292524;
+    padding: 1.25rem 0 1.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-editorial .footer-copy {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #78716c;
+}
+
+.footer-editorial .footer-note {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #57534e;
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 768px) {
+    .footer-editorial .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
 /* ============================================
