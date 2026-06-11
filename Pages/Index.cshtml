@@ -1,0 +1,22 @@
+@page
+@model ECommerceFinalProject.Pages.IndexModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="display-4">Chào mừng đến với ECommerce</h1>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <p class="lead mt-3">Xin chào, <strong>@User.Identity.Name</strong>!</p>
+            <p>Chúc bạn một ngày mua sắm vui vẻ!</p>
+        }
+        else
+        {
+            <p class="lead mt-3">
+                Vui lòng <a href="/Account/Login">đăng nhập</a> hoặc <a href="/Account/Register">đăng ký</a> để tiếp tục.
+            </p>
+        }
+    </div>
+</div>
