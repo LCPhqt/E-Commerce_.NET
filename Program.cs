@@ -92,10 +92,15 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("✅ Đã tạo lại database với encoding UTF-8 chính xác!");
     }
 
-    // Seed dữ liệu mẫu nếu database trống
+    // Seed dữ liệu mẫu (chỉ thêm những gì còn thiếu)
     if (!db.NguoiDung.Any())
     {
         SeedData(db);
+    }
+    else
+    {
+        // Nếu database cũ đã có dữ liệu, thêm sản phẩm mới còn thiếu
+        SeedMissingProducts(db);
     }
 
     // Auto-update product images to local files
@@ -130,6 +135,64 @@ using (var scope = app.Services.CreateScope())
         }
     }
     db.SaveChanges();
+}
+
+static void SeedMissingProducts(AppDbContext db)
+{
+    // Thêm danh mục Thời trang, Đồ gia dụng nếu chưa có
+    if (!db.Categories.Any(c => c.Ten == "Thời trang"))
+    {
+        db.Categories.Add(new Category { Ten = "Thời trang", MoTa = "Quần áo, giày dép" });
+    }
+    if (!db.Categories.Any(c => c.Ten == "Đồ gia dụng"))
+    {
+        db.Categories.Add(new Category { Ten = "Đồ gia dụng", MoTa = "Đồ dùng gia đình" });
+    }
+    db.SaveChanges();
+
+    // Lấy tất cả danh mục
+    var cats = db.Categories.ToDictionary(c => c.Ten, c => c.Id);
+
+    // Định nghĩa sản phẩm mới (chưa có trong db cũ)
+    var newProducts = new List<Product>
+    {
+        // Điện thoại
+        new() { TenSanPham = "Google Pixel 9 Pro", MoTa = "Điện thoại Google với AI thông minh, camera 50MP", Gia = 21990000, HinhAnhUrl = "/images/pixel9.jpg", SoLuongTon = 35, DanhMucId = cats["Điện thoại"] },
+        // Laptop
+        new() { TenSanPham = "ASUS ROG Zephyrus G14", MoTa = "Laptop gaming AMD Ryzen 9, RTX 4060, 14\" 2K", Gia = 35990000, HinhAnhUrl = "/images/asusrog.jpg", SoLuongTon = 15, DanhMucId = cats["Laptop"] },
+        // Phụ kiện
+        new() { TenSanPham = "Sạc dự phòng 20000mAh", MoTa = "Pin sạc dự phòng dung lượng cao, hỗ trợ sạc nhanh 65W", Gia = 890000, HinhAnhUrl = "/images/powerbank.jpg", SoLuongTon = 200, DanhMucId = cats["Phụ kiện"] },
+        new() { TenSanPham = "Bàn phím cơ Mechanical", MoTa = "Bàn phím cơ RGB switch xanh, dây kéo bọc dù", Gia = 1590000, HinhAnhUrl = "/images/keyboard.jpg", SoLuongTon = 60, DanhMucId = cats["Phụ kiện"] },
+        new() { TenSanPham = "Loa Bluetooth JBL Flip 6", MoTa = "Loa di động chống nước, công suất 30W", Gia = 2990000, HinhAnhUrl = "/images/speaker.jpg", SoLuongTon = 45, DanhMucId = cats["Phụ kiện"] },
+        // Thời trang
+        new() { TenSanPham = "Áo thun nam Basic", MoTa = "Áo thun cotton 100% cao cấp, nhiều màu sắc", Gia = 299000, HinhAnhUrl = "/images/tshirt.jpg", SoLuongTon = 500, DanhMucId = cats["Thời trang"] },
+        new() { TenSanPham = "Giày thể thao Nike Air", MoTa = "Giày chạy bộ Nike Air đế êm, siêu nhẹ", Gia = 3290000, HinhAnhUrl = "/images/sneakers.jpg", SoLuongTon = 120, DanhMucId = cats["Thời trang"] },
+        new() { TenSanPham = "Đồng hồ Apple Watch SE", MoTa = "Đồng hồ thông minh, đo nhịp tim, GPS", Gia = 7990000, HinhAnhUrl = "/images/smartwatch.jpg", SoLuongTon = 70, DanhMucId = cats["Thời trang"] },
+        new() { TenSanPham = "Balo thời trang chống nước", MoTa = "Balo chống nước 40L, nhiều ngăn tiện lợi", Gia = 690000, HinhAnhUrl = "/images/backpack.jpg", SoLuongTon = 150, DanhMucId = cats["Thời trang"] },
+        // Đồ gia dụng
+        new() { TenSanPham = "Nồi chiên không dầu Philips", MoTa = "Nồi chiên không dầu 6.5L, không khói, ít dầu mỡ", Gia = 3590000, HinhAnhUrl = "/images/airfryer.jpg", SoLuongTon = 40, DanhMucId = cats["Đồ gia dụng"] },
+        new() { TenSanPham = "Máy xay sinh tố đa năng", MoTa = "Máy xay sinh tố 6 lưỡi, 3 tốc độ, cối thủy tinh", Gia = 1290000, HinhAnhUrl = "/images/blender.jpg", SoLuongTon = 90, DanhMucId = cats["Đồ gia dụng"] },
+        new() { TenSanPham = "Quạt điện cây Panasonic", MoTa = "Quạt đứng Panasonic 3 cánh, 4 tốc độ, êm ái", Gia = 1590000, HinhAnhUrl = "/images/fan.jpg", SoLuongTon = 65, DanhMucId = cats["Đồ gia dụng"] },
+        new() { TenSanPham = "Máy lọc nước RO Kangaroo", MoTa = "Máy lọc nước RO 9 lõi, nước nóng nguội", Gia = 6990000, HinhAnhUrl = "/images/filter.jpg", SoLuongTon = 25, DanhMucId = cats["Đồ gia dụng"] },
+    };
+
+    // Chỉ thêm sản phẩm chưa tồn tại
+    var existingNames = db.Products.Select(p => p.TenSanPham).ToHashSet();
+    var added = 0;
+    foreach (var p in newProducts)
+    {
+        if (!existingNames.Contains(p.TenSanPham))
+        {
+            db.Products.Add(p);
+            added++;
+        }
+    }
+
+    if (added > 0)
+    {
+        db.SaveChanges();
+        Console.WriteLine($"✅ Đã thêm {added} sản phẩm mới vào database cũ!");
+    }
 }
 
 static void SeedData(AppDbContext db)
