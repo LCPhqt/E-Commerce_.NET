@@ -6,22 +6,20 @@
 }
 
 <div class="page-header">
-    <h4><i class="bi bi-plus-circle"></i> Thêm danh mục</h4>
-    <a href="/Admin/Categories/Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    <h4>Thêm danh mục</h4>
+    <a href="/Admin/Categories/Index" class="btn-editorial-admin"><i class="bi bi-arrow-left"></i> Quay lại</a>
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <form method="post">
-            <div class="mb-3">
-                <label class="form-label">Tên danh mục <span class="text-danger">*</span></label>
-                <input type="text" name="Ten" class="form-control" required maxlength="100" />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Mô tả</label>
-                <textarea name="MoTa" class="form-control" rows="3" maxlength="500"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu</button>
-        </form>
-    </div>
+<div class="card-editorial">
+    <form method="post">
+        <div class="mb-3">
+            <label>Tên danh mục <span style="color:var(--accent);">*</span></label>
+            <input type="text" name="Ten" class="form-editorial" required maxlength="100" />
+        </div>
+        <div class="mb-3">
+            <label>Mô tả</label>
+            <textarea name="MoTa" class="form-editorial" rows="3" maxlength="500"></textarea>
+        </div>
+        <button type="submit" class="btn-editorial-admin primary"><i class="bi bi-save"></i> Lưu</button>
+    </form>
 </div>

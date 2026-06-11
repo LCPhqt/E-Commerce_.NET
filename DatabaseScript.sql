@@ -1,4 +1,4 @@
--- ============================================
+﻿-- ============================================
 -- Script tạo database ECommerceDB
 -- Dùng cho SQL Server
 -- Các thành viên chạy file này trong SSMS

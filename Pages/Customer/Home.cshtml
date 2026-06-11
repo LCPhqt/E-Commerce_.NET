@@ -4,42 +4,85 @@
     ViewData["Title"] = "Trang chủ";
 }
 
-<div class="hero-section text-center">
-    <h1><i class="bi bi-shop"></i> Chào mừng đến với ECommerce</h1>
-    <p class="lead mb-4">Khám phá hàng ngàn sản phẩm với giá ưu đãi</p>
-    <a href="/Customer/Products" class="btn btn-light btn-lg px-5">
-        <i class="bi bi-bag"></i> Mua sắm ngay
-    </a>
-</div>
+<!-- Editorial Hero Section -->
+<section class="hero-editorial">
+    <div class="container">
+        <div class="hero-asymmetric">
+            <div>
+                <span class="hero-label">Bộ sưu tập mới</span>
+                <h1 class="hero-title">Công nghệ<br>định hình phong cách</h1>
+                <p class="hero-sub">
+                    Khám phá những sản phẩm công nghệ cao cấp — từ iPhone 15 Pro Max đến MacBook Air M3.
+                    Thiết bị tốt nhất, giá trị thật.
+                </p>
+                <a href="/Customer/Products" class="btn-editorial">
+                    <i class="bi bi-arrow-right"></i> Khám phá ngay
+                </a>
+            </div>
+            <div>
+                <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80" alt="Công nghệ" class="hero-image" onerror="this.style.display='none'">
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- New Products Section -->
 @if (Model.NewProducts.Any())
 {
-    <section class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold"><i class="bi bi-star"></i> Sản phẩm mới nhất</h3>
-            <a href="/Customer/Products" class="btn btn-outline-primary">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    <section class="container mb-5">
+        <div class="section-header">
+            <h2 class="section-title">Sản phẩm mới</h2>
+            <a href="/Customer/Products" class="section-link">
+                Xem tất cả <i class="bi bi-arrow-right"></i>
+            </a>
         </div>
         <div class="row g-4">
             @foreach (var product in Model.NewProducts)
             {
                 <div class="col-6 col-md-4 col-lg-3">
-                    <div class="card product-card shadow-sm">
-                        @if (!string.IsNullOrEmpty(product.HinhAnhUrl))
-                        {
-                            <img src="@product.HinhAnhUrl" class="card-img-top" alt="@product.TenSanPham" onerror="fallbackImg(this)">
-                        }
-                        else
-                        {
-                            <div class="card-img-top d-flex align-items-center justify-content-center bg-light text-muted">
-                                <i class="bi bi-image" style="font-size: 48px;"></i>
-                            </div>
-                        }
+                    <div class="product-card">
+                        <div class="position-relative">
+                            @if (!string.IsNullOrEmpty(product.HinhAnhUrl))
+                            {
+                                <img src="@product.HinhAnhUrl" class="card-img-top" alt="@product.TenSanPham" onerror="fallbackImg(this)">
+                            }
+                            else
+                            {
+                                <div class="card-img-top d-flex align-items-center justify-content-center bg-light text-muted" style="min-height:260px;">
+                                    <i class="bi bi-image" style="font-size: 48px;"></i>
+                                </div>
+                            }
+                            @if (product.SoLuongTon == 0)
+                            {
+                                <span class="stock-badge out">Hết hàng</span>
+                            }
+                            else if (product.SoLuongTon <= 5)
+                            {
+                                <span class="stock-badge low">Sắp hết</span>
+                            }
+                        </div>
                         <div class="card-body">
                             <p class="product-title">@product.TenSanPham</p>
-                            <p class="product-price">@product.Gia.ToString("N0")đ</p>
-                            <a href="/Customer/ProductDetails?id=@product.Id" class="btn btn-primary btn-sm w-100">
-                                <i class="bi bi-eye"></i> Xem chi tiết
-                            </a>
+                            <p class="product-price">@product.Gia.ToString("N0")₫</p>
+                            <div class="product-footer">
+                                <a href="/Customer/ProductDetails?id=@product.Id" class="btn-view">
+                                    <i class="bi bi-eye"></i> Chi tiết
+                                </a>
+                                @if (User.Identity?.IsAuthenticated == true && product.SoLuongTon > 0)
+                                {
+                                    <form method="post" asp-page="/Customer/Cart" asp-page-handler="Add" asp-route-productId="@product.Id" style="display:inline;">
+                                        <button type="submit" class="btn-cart">
+                                            <i class="bi bi-cart-plus"></i>
+                                        </button>
+                                    </form>
+                                }
+                                else if (User.Identity?.IsAuthenticated != true)
+                                {
+                                    <a href="/Account/Login" class="btn-cart">
+                                        <i class="bi bi-box-arrow-in-right"></i>
+                                    </a>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -47,3 +90,33 @@
         </div>
     </section>
 }
+
+<!-- Brand / Value Section -->
+<section class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="p-4" style="border: 1px solid var(--border-light); border-radius: var(--radius-card);">
+                <h3 class="section-title" style="font-size:1.2rem;">Giao hàng nhanh</h3>
+                <p class="text-secondary mt-2" style="font-size:0.9rem;">
+                    Miễn phí giao hàng cho đơn từ 500.000₫ trong nội thành.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4" style="border: 1px solid var(--border-light); border-radius: var(--radius-card);">
+                <h3 class="section-title" style="font-size:1.2rem;">Bảo hành chính hãng</h3>
+                <p class="text-secondary mt-2" style="font-size:0.9rem;">
+                    Tất cả sản phẩm đều được bảo hành chính hãng 12 tháng.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4" style="border: 1px solid var(--border-light); border-radius: var(--radius-card);">
+                <h3 class="section-title" style="font-size:1.2rem;">Đổi trả dễ dàng</h3>
+                <p class="text-secondary mt-2" style="font-size:0.9rem;">
+                    Đổi trả trong 30 ngày nếu sản phẩm không đúng ý bạn.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

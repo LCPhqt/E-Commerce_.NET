@@ -6,12 +6,12 @@
 }
 
 <div class="page-header">
-    <h4><i class="bi bi-people"></i> Quản lý người dùng</h4>
+    <h4>Quản lý người dùng</h4>
 </div>
 
-<div class="card shadow-sm table-admin">
+<div class="table-admin">
     <div class="table-responsive">
-        <table class="table table-hover mb-0">
+        <table class="table mb-0">
             <thead>
                 <tr>
                     <th>Tên đăng nhập</th>
@@ -24,17 +24,17 @@
             <tbody>
                 @if (!Model.Users.Any())
                 {
-                    <tr><td colspan="5" class="text-center text-muted py-4">Chưa có người dùng nào.</td></tr>
+                    <tr><td colspan="5" class="text-center py-4" style="color:var(--text-muted);">Chưa có người dùng nào.</td></tr>
                 }
                 @foreach (var user in Model.Users)
                 {
                     <tr>
-                        <td class="fw-bold">@user.TenDangNhap</td>
+                        <td style="font-weight:500;">@user.TenDangNhap</td>
                         <td>@user.Ho @user.Ten</td>
                         <td>@user.Email</td>
                         <td>@(user.SoDienThoai ?? "—")</td>
                         <td>
-                            <span class="badge @(user.VaiTro == "Admin" ? "bg-danger" : "bg-primary")">@user.VaiTro</span>
+                            <span style="font-family:var(--font-body);font-size:0.75rem;padding:0.15rem 0.5rem;border-radius:2px;font-weight:500;@(user.VaiTro == "Admin" ? "background:#1a1a1a;color:white;" : "background:#edf2f7;color:#2b6cb0;")">@user.VaiTro</span>
                         </td>
                     </tr>
                 }

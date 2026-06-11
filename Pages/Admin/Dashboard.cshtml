@@ -6,7 +6,7 @@
 }
 
 <div class="page-header">
-    <h4><i class="bi bi-speedometer2"></i> Dashboard</h4>
+    <h4>Dashboard</h4>
 </div>
 
 <div class="row g-4 mb-4">
@@ -47,7 +47,7 @@
         <div class="stat-card stat-red">
             <div class="d-flex justify-content-between">
                 <div>
-                    <div class="stat-number">@Model.TotalRevenue.ToString("N0")đ</div>
+                    <div class="stat-number">@Model.TotalRevenue.ToString("N0")₫</div>
                     <div class="stat-label">Doanh thu</div>
                 </div>
                 <div class="stat-icon"><i class="bi bi-cash-stack"></i></div>
@@ -56,47 +56,43 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row g-4">
     <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart"></i> Trạng thái đơn hàng</h5>
-                @if (Model.OrderStatusCounts.Any())
-                {
-                    <table class="table table-borderless">
-                        @foreach (var status in Model.OrderStatusCounts)
-                        {
-                            <tr>
-                                <td>
-                                    <span class="status-badge
-                                        @(status.Key == "Chờ xử lý" ? "status-pending" :
-                                          status.Key == "Đang giao" ? "status-shipping" :
-                                          status.Key == "Đã giao" ? "status-delivered" :
-                                          "status-cancelled")">
-                                        @status.Key
-                                    </span>
-                                </td>
-                                <td class="text-end"><strong>@status.Value</strong></td>
-                            </tr>
-                        }
-                    </table>
-                }
-                else
-                {
-                    <p class="text-muted">Chưa có đơn hàng.</p>
-                }
-            </div>
+        <div class="card-editorial">
+            <h3 class="card-title mb-3" style="font-size:1rem;">Trạng thái đơn hàng</h3>
+            @if (Model.OrderStatusCounts.Any())
+            {
+                <table class="table" style="font-family:var(--font-body);font-size:0.9rem;">
+                    @foreach (var status in Model.OrderStatusCounts)
+                    {
+                        <tr>
+                            <td>
+                                <span class="status-badge
+                                    @(status.Key == "Chờ xử lý" ? "status-pending" :
+                                      status.Key == "Đang giao" ? "status-shipping" :
+                                      status.Key == "Đã giao" ? "status-delivered" :
+                                      "status-cancelled")">
+                                    @status.Key
+                                </span>
+                            </td>
+                            <td class="text-end"><strong>@status.Value</strong></td>
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <p style="color:var(--text-muted);">Chưa có đơn hàng.</p>
+            }
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="fw-bold mb-3"><i class="bi bi-lightning"></i> Thao tác nhanh</h5>
-                <div class="d-grid gap-2">
-                    <a href="/Admin/Products/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Thêm sản phẩm mới</a>
-                    <a href="/Admin/Categories/Create" class="btn btn-outline-primary"><i class="bi bi-plus-circle"></i> Thêm danh mục mới</a>
-                    <a href="/Admin/Orders" class="btn btn-outline-primary"><i class="bi bi-truck"></i> Xem đơn hàng mới</a>
-                </div>
+        <div class="card-editorial">
+            <h3 class="card-title mb-3" style="font-size:1rem;">Thao tác nhanh</h3>
+            <div class="d-grid gap-2">
+                <a href="/Admin/Products/Create" class="btn-editorial-admin primary"><i class="bi bi-plus-circle"></i> Thêm sản phẩm mới</a>
+                <a href="/Admin/Categories/Create" class="btn-editorial-admin"><i class="bi bi-plus-circle"></i> Thêm danh mục mới</a>
+                <a href="/Admin/Orders" class="btn-editorial-admin"><i class="bi bi-truck"></i> Xem đơn hàng mới</a>
             </div>
         </div>
     </div>

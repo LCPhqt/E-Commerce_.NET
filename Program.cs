@@ -63,7 +63,33 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("⚠️ Database cũ không hợp lệ, đang tạo lại...");
         db.Database.EnsureDeleted();
         db.Database.EnsureCreated();
+        db.ChangeTracker.Clear();
         Console.WriteLine("✅ Đã tạo lại database thành công!");
+    }
+
+    // Kiểm tra lỗi encoding tiếng Việt (ví dụ: "Đ" hiển thị thành "Ä")
+    var encodingError = false;
+    try
+    {
+        var sampleCat = db.Categories.FirstOrDefault();
+        if (sampleCat != null && sampleCat.Ten.Length > 0 && sampleCat.Ten[0] == 'Ä')
+        {
+            encodingError = true;
+            Console.WriteLine("⚠️ Phát hiện lỗi encoding dữ liệu (tiếng Việt bị hỏng), đang tạo lại database...");
+        }
+    }
+    catch
+    {
+        // Nếu truy vấn lỗi, EnsureDeleted sẽ xử lý
+        encodingError = true;
+    }
+
+    if (encodingError)
+    {
+        db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
+        db.ChangeTracker.Clear();
+        Console.WriteLine("✅ Đã tạo lại database với encoding UTF-8 chính xác!");
     }
 
     // Seed dữ liệu mẫu nếu database trống
