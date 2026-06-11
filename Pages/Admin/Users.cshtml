@@ -1,0 +1,44 @@
+@page
+@model ECommerceFinalProject.Pages.Admin.UsersModel
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    ViewData["ActivePage"] = "Users";
+}
+
+<div class="page-header">
+    <h4>Quản lý người dùng</h4>
+</div>
+
+<div class="table-admin">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Tên đăng nhập</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Vai trò</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Users.Any())
+                {
+                    <tr><td colspan="5" class="text-center py-4" style="color:var(--text-muted);">Chưa có người dùng nào.</td></tr>
+                }
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td style="font-weight:500;">@user.TenDangNhap</td>
+                        <td>@user.Ho @user.Ten</td>
+                        <td>@user.Email</td>
+                        <td>@(user.SoDienThoai ?? "—")</td>
+                        <td>
+                            <span style="font-family:var(--font-body);font-size:0.75rem;padding:0.15rem 0.5rem;border-radius:2px;font-weight:500;@(user.VaiTro == "Admin" ? "background:#1a1a1a;color:white;" : "background:#edf2f7;color:#2b6cb0;")">@user.VaiTro</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

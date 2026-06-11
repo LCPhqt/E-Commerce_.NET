@@ -1,0 +1,67 @@
+@page
+@model ECommerceFinalProject.Pages.Admin.OrdersModel
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+    ViewData["ActivePage"] = "Orders";
+}
+
+<div class="page-header">
+    <h4>Quản lý đơn hàng</h4>
+</div>
+
+<div class="table-admin">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Mã ĐH</th>
+                    <th>Khách hàng</th>
+                    <th>Ngày đặt</th>
+                    <th>Số SP</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Orders.Any())
+                {
+                    <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">Chưa có đơn hàng nào.</td></tr>
+                }
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td style="font-weight:600;">#@order.Id</td>
+                        <td>@order.NguoiDung?.Ho @order.NguoiDung?.Ten</td>
+                        <td>@order.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@(order.OrderDetails?.Count ?? 0)</td>
+                        <td style="font-weight:500;">@order.TongTien.ToString("N0")₫</td>
+                        <td>
+                            <span class="status-badge
+                                @(order.TrangThai == "Chờ xử lý" ? "status-pending" :
+                                  order.TrangThai == "Đang giao" ? "status-shipping" :
+                                  order.TrangThai == "Đã giao" ? "status-delivered" :
+                                  "status-cancelled")">
+                                @order.TrangThai
+                            </span>
+                        </td>
+                        <td>
+                            <form method="post" class="d-flex gap-1">
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <select name="trangThai" style="font-family:var(--font-body);font-size:0.8rem;padding:0.3rem 0.5rem;border:1px solid var(--border-light);border-radius:var(--radius-btn);">
+                                    <option value="Chờ xử lý" selected="@(order.TrangThai == "Chờ xử lý")">Chờ xử lý</option>
+                                    <option value="Đang giao" selected="@(order.TrangThai == "Đang giao")">Đang giao</option>
+                                    <option value="Đã giao" selected="@(order.TrangThai == "Đã giao")">Đã giao</option>
+                                    <option value="Đã hủy" selected="@(order.TrangThai == "Đã hủy")">Đã hủy</option>
+                                </select>
+                                <button type="submit" class="btn-editorial-admin" style="padding:0.3rem 0.6rem;">
+                                    <i class="bi bi-check"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

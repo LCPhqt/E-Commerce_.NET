@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Admin</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600;6..96,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/css/admin.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <nav class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="/Admin/Dashboard">
+                    <h5>Admin</h5>
+                    <small>ECommerce</small>
+                </a>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Dashboard" ? "active" : "")" href="/Admin/Dashboard">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Products" ? "active" : "")" href="/Admin/Products/Index">
+                        <i class="bi bi-box"></i> Sản phẩm
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Categories" ? "active" : "")" href="/Admin/Categories/Index">
+                        <i class="bi bi-tags"></i> Danh mục
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Orders" ? "active" : "")" href="/Admin/Orders">
+                        <i class="bi bi-truck"></i> Đơn hàng
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Users" ? "active" : "")" href="/Admin/Users">
+                        <i class="bi bi-people"></i> Người dùng
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Reports" ? "active" : "")" href="/Admin/Reports">
+                        <i class="bi bi-bar-chart"></i> Thống kê
+                    </a>
+                </li>
+                <li class="nav-item mt-4">
+                    <a class="nav-link" href="/Customer/Home">
+                        <i class="bi bi-shop"></i> Về trang người dùng
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Account/Logout">
+                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="admin-content">
+            <nav class="admin-topbar">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">@ViewData["Title"]</span>
+                    <div>
+                        <span style="font-size:0.85rem;color:var(--text-secondary);">
+                            <i class="bi bi-person-circle"></i> @User.FindFirst("FullName")?.Value
+                        </span>
+                        <span class="badge-editorial" style="background:#1a1a1a;color:white;margin-left:0.5rem;">Admin</span>
+                    </div>
+                </div>
+            </nav>
+            <div class="admin-main">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert-editorial-admin success">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert-editorial-admin error">@TempData["ErrorMessage"]</div>
+                }
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

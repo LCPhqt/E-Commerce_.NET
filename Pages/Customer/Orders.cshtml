@@ -1,0 +1,70 @@
+@page
+@model ECommerceFinalProject.Pages.Customer.OrdersModel
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<section class="container py-4">
+    <div class="section-header">
+        <h1 class="section-title">Đơn hàng của tôi</h1>
+    </div>
+
+    @if (!Model.Orders.Any())
+    {
+        <div class="text-center py-5" style="border:1px solid var(--border-light);border-radius:var(--radius-card);">
+            <i class="bi bi-inbox" style="font-size: 64px; color: var(--text-muted);"></i>
+            <p class="text-secondary mt-3">Bạn chưa có đơn hàng nào.</p>
+            <a href="/Customer/Products" class="btn-editorial" style="display:inline-flex;">
+                <i class="bi bi-arrow-right"></i> Mua sắm ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        @foreach (var order in Model.Orders)
+        {
+            <div class="order-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:600;margin:0 0 0.25rem 0;">
+                            Đơn hàng #@order.Id
+                        </h3>
+                        <small style="color:var(--text-muted);font-family:var(--font-body);font-size:0.85rem;">
+                            @order.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                        </small>
+                    </div>
+                    <span class="status-badge
+                        @(order.TrangThai == "Chờ xử lý" ? "status-pending" :
+                          order.TrangThai == "Đang giao" ? "status-shipping" :
+                          order.TrangThai == "Đã giao" ? "status-delivered" :
+                          "status-cancelled")">
+                        @order.TrangThai
+                    </span>
+                </div>
+
+                @if (order.OrderDetails != null)
+                {
+                    @foreach (var detail in order.OrderDetails)
+                    {
+                        <div class="d-flex justify-content-between align-items-center py-1" style="font-size:0.9rem;">
+                            <span>@detail.TenSanPham <span style="color:var(--text-muted);">x@(detail.SoLuong)</span></span>
+                            <span style="font-weight:500;">@((detail.SoLuong * detail.DonGia).ToString("N0"))₫</span>
+                        </div>
+                    }
+                }
+
+                <hr style="border-color:var(--border-light);margin:0.75rem 0;">
+                <div class="d-flex justify-content-between" style="font-size:0.9rem;">
+                    <span><strong>Địa chỉ:</strong> @order.DiaChiGiao</span>
+                    <strong style="color:var(--accent);">Tổng: @order.TongTien.ToString("N0")₫</strong>
+                </div>
+                @if (!string.IsNullOrEmpty(order.GhiChu))
+                {
+                    <div class="mt-2" style="color:var(--text-muted);font-size:0.85rem;">
+                        <strong>Ghi chú:</strong> @order.GhiChu
+                    </div>
+                }
+            </div>
+        }
+    }
+</section>

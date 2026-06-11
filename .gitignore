@@ -1,0 +1,41 @@
+# .NET
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.vs
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.log
+*.cache
+*.tmp
+
+# ASP.NET
+wwwroot/lib/
+App_Data/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*~
+
+# Config
+appsettings.Development.json
+Properties/launchSettings.json
+
+# SQL
+*.mdf
+*.ldf
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Build
+packages/
+*.nupkg
