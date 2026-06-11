@@ -157,6 +157,60 @@ p, .text-muted, .card-text {
 }
 
 /* ============================================
+   Buttons (Global)
+   ============================================ */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-btn);
+    background: var(--accent);
+    color: white !important;
+    transition: all 0.25s;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(199, 62, 29, 0.3);
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-btn);
+    background: transparent;
+    color: var(--text-primary) !important;
+    transition: all 0.25s;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    border-color: var(--text-primary);
+    background: var(--bg-card);
+    transform: translateY(-1px);
+}
+
+/* ============================================
    Hero Section (Editorial)
    ============================================ */
 .hero-editorial {
