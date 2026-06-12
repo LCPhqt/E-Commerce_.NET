@@ -4,23 +4,42 @@
     ViewData["Title"] = "Trang chủ";
 }
 
-<div class="container mt-5">
-    <div class="text-center">
-        <h1 class="display-4">Chào mừng đến với ECommerce</h1>
-        @if (User.Identity?.IsAuthenticated == true)
-        {
-            <p class="lead mt-3">Xin chào, <strong>@User.Identity.Name</strong>!</p>
-            <p>Chúc bạn một ngày mua sắm vui vẻ!</p>
-            <a href="/Customer/Products"
-               style="display:inline-block;margin-top:1.5rem;font-family:'Outfit',sans-serif;font-size:0.75rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;padding:0.6rem 1.5rem;border:2px solid #1a1a1a;border-radius:2px;background:#1a1a1a;color:white;text-decoration:none;">
-                Mua sắm ngay
-            </a>
-        }
-        else
-        {
-            <p class="lead mt-3">
-                Vui lòng <a href="/Account/Login">đăng nhập</a> hoặc <a href="/Account/Register">đăng ký</a> để tiếp tục.
-            </p>
-        }
+<div class="container py-5">
+    <div class="text-center" style="max-width:600px;margin:0 auto;">
+        <div style="background:rgba(255,255,255,0.55);backdrop-filter:blur(18px) saturate(1.6);-webkit-backdrop-filter:blur(18px) saturate(1.6);border:1px solid rgba(255,255,255,0.45);border-radius:20px;padding:3rem 2rem;box-shadow:0 8px 32px rgba(0,0,0,0.04);">
+            <div style="font-size:3rem;margin-bottom:1rem;">
+                <span style="background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">✦</span>
+            </div>
+            <h1 style="font-family:'Outfit',sans-serif;font-weight:650;font-size:2rem;letter-spacing:-0.03em;color:#1a1a2e;margin-bottom:0.75rem;">
+                Chào mừng đến với <span style="background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ECommerce</span>
+            </h1>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <p style="color:#6b7280;font-size:1rem;margin-bottom:0.5rem;">
+                    Xin chào, <strong style="color:#1a1a2e;">@User.FindFirst("FullName")?.Value</strong>!
+                </p>
+                <p style="color:#6b7280;margin-bottom:2rem;">Chúc bạn một ngày mua sắm vui vẻ!</p>
+                <a href="/Customer/Products"
+                   style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.82rem;font-weight:550;padding:0.75rem 1.75rem;border:none;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;text-decoration:none;box-shadow:0 4px 16px rgba(99,102,241,0.25);transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);">
+                    <i class="bi bi-arrow-right"></i> Mua sắm ngay
+                </a>
+            }
+            else
+            {
+                <p style="color:#6b7280;margin-bottom:2rem;">
+                    Vui lòng đăng nhập để khám phá bộ sưu tập công nghệ cao cấp.
+                </p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="/Account/Login"
+                       style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.82rem;font-weight:500;padding:0.75rem 1.75rem;border-radius:10px;border:1px solid rgba(255,255,255,0.45);background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);color:#1a1a2e;text-decoration:none;transition:all 0.25s;">
+                        <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                    </a>
+                    <a href="/Account/Register"
+                       style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.82rem;font-weight:550;padding:0.75rem 1.75rem;border:none;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);color:white;text-decoration:none;box-shadow:0 4px 16px rgba(99,102,241,0.25);transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);">
+                        <i class="bi bi-person-plus"></i> Đăng ký
+                    </a>
+                </div>
+            }
+        </div>
     </div>
 </div>

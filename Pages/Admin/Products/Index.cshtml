@@ -5,59 +5,63 @@
     ViewData["ActivePage"] = "Products";
 }
 
-<div class="page-header">
-    <h4>Quản lý sản phẩm</h4>
-    <a href="/Admin/Products/Create" class="btn-editorial-admin primary"><i class="bi bi-plus-circle"></i> Thêm sản phẩm</a>
-</div>
+<div class="admin-light-section">
+    <div class="page-header">
+        <h4>Quản lý sản phẩm</h4>
+        <a href="/Admin/Products/Create" class="admin-light-btn primary"><i class="bi bi-plus-circle"></i> Thêm sản phẩm</a>
+    </div>
 
-<div class="table-admin">
-    <div class="table-responsive">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Hình ảnh</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Danh mục</th>
-                    <th>Giá</th>
-                    <th>Tồn kho</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!Model.Products.Any())
-                {
-                    <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">Chưa có sản phẩm nào.</td></tr>
-                }
-                @foreach (var product in Model.Products)
-                {
+    <div class="admin-light-table">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
                     <tr>
-                        <td>@product.Id</td>
-                        <td>
-                            @if (!string.IsNullOrEmpty(product.HinhAnhUrl))
-                            {
-                                <img src="@product.HinhAnhUrl" style="width: 50px; height: 50px; object-fit: cover; border-radius: 2px;" />
-                            }
-                            else
-                            {
-                                <span style="color:var(--text-muted);"><i class="bi bi-image"></i></span>
-                            }
-                        </td>
-                        <td style="font-weight:500;">@product.TenSanPham</td>
-                        <td>@product.DanhMuc?.Ten</td>
-                        <td>@product.Gia.ToString("N0")₫</td>
-                        <td>
-                            <span style="font-family:var(--font-body);font-size:0.75rem;padding:0.15rem 0.5rem;border-radius:2px;font-weight:500;@(product.SoLuongTon > 0 ? "background:#f0faf0;color:#276749;" : "background:#fff5f5;color:#9b2c2c;")">@product.SoLuongTon</span>
-                        </td>
-                        <td>
-                            <div class="d-flex gap-1">
-                                <a href="/Admin/Products/Edit?id=@product.Id" class="btn-editorial-admin" style="padding:0.25rem 0.5rem;"><i class="bi bi-pencil"></i></a>
-                                <a href="/Admin/Products/Delete?id=@product.Id" class="btn-editorial-admin danger" style="padding:0.25rem 0.5rem;"><i class="bi bi-trash"></i></a>
-                            </div>
-                        </td>
+                        <th>ID</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Giá</th>
+                        <th>Tồn kho</th>
+                        <th>Thao tác</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @if (!Model.Products.Any())
+                    {
+                        <tr><td colspan="7" class="text-center py-4" style="color:#9ca3af;">Chưa có sản phẩm nào.</td></tr>
+                    }
+                    @foreach (var product in Model.Products)
+                    {
+                        <tr>
+                            <td style="color:#6b6560;">@product.Id</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(product.HinhAnhUrl))
+                                {
+                                    <img src="@product.HinhAnhUrl" style="width:46px;height:46px;object-fit:cover;border-radius:6px;border:1px solid #e8e5e0;" />
+                                }
+                                else
+                                {
+                                    <span style="color:#9ca3af;"><i class="bi bi-image" style="font-size:1.3rem;"></i></span>
+                                }
+                            </td>
+                            <td style="font-weight:500;color:#111111;">@product.TenSanPham</td>
+                            <td><span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:4px;background:#eef2ff;color:#4f46e5;">@product.DanhMuc?.Ten</span></td>
+                            <td style="color:#111111;">@product.Gia.ToString("N0")₫</td>
+                            <td>
+                                <span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:4px;font-weight:500;background:@(product.SoLuongTon > 0 ? "#f0faf0;color:#166534" : "#fef2f2;color:#991b1b");">
+                                    @product.SoLuongTon
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="/Admin/Products/Edit?id=@product.Id" class="admin-light-btn" style="padding:0.3rem 0.5rem;"><i class="bi bi-pencil"></i></a>
+                                    <a href="/Admin/Products/Delete?id=@product.Id" class="admin-light-btn danger" style="padding:0.3rem 0.5rem;"><i class="bi bi-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

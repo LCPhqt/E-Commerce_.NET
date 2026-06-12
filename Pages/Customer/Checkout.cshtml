@@ -5,66 +5,66 @@
 }
 
 <section class="container py-4">
-    <div class="section-header">
-        <h1 class="section-title">Thanh toán</h1>
+    <div class="section-header-glass">
+        <h1 class="section-title-glass">Thanh toán</h1>
     </div>
 
     @if (!Model.HasItems)
     {
-        <div class="text-center py-5" style="border:1px solid var(--border-light);border-radius:var(--radius-card);">
-            <i class="bi bi-cart-x" style="font-size: 64px; color: var(--text-muted);"></i>
-            <p class="text-secondary mt-3">Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.</p>
-            <a href="/Customer/Products" class="btn-editorial" style="display:inline-flex;">
+        <div class="empty-state-glass">
+            <i class="bi bi-cart-x empty-icon"></i>
+            <p>Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.</p>
+            <a href="/Customer/Products" class="btn-glass-primary" style="display:inline-flex;">
                 <i class="bi bi-arrow-right"></i> Mua sắm ngay
             </a>
         </div>
     }
     else
     {
-        <div class="row">
+        <div class="row g-4">
             <div class="col-lg-7">
-                <div style="background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-card);padding:1.5rem;margin-bottom:1.5rem;">
-                    <h3 style="font-family:var(--font-display);font-size:1.3rem;font-weight:600;margin-bottom:1.25rem;">Thông tin giao hàng</h3>
+                <div class="checkout-section-glass animate-fade-in-up">
+                    <h3><i class="bi bi-truck" style="margin-right:0.5rem;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></i> Thông tin giao hàng</h3>
                     <form method="post">
                         <div class="mb-3">
-                            <label style="font-family:var(--font-body);font-size:0.75rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:0.35rem;display:block;">
-                                Địa chỉ giao hàng <span style="color:var(--accent);">*</span>
+                            <label class="form-label-glass">
+                                Địa chỉ giao hàng <span class="required">*</span>
                             </label>
-                            <textarea name="DiaChiGiao" rows="3" style="width:100%;font-family:var(--font-body);font-size:0.85rem;padding:0.65rem 0.85rem;border:1px solid var(--border-light);border-radius:var(--radius-btn);background:var(--bg-card);color:var(--text-primary);" required placeholder="Nhập địa chỉ nhận hàng..."></textarea>
+                            <textarea name="DiaChiGiao" rows="3" class="form-input-glass" required placeholder="Nhập địa chỉ nhận hàng..."></textarea>
                         </div>
                         <div class="mb-3">
-                            <label style="font-family:var(--font-body);font-size:0.75rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:0.35rem;display:block;">
-                                Ghi chú
+                            <label class="form-label-glass">
+                                Ghi chú <span style="color:var(--text-muted);font-weight:400;text-transform:none;">(không bắt buộc)</span>
                             </label>
-                            <textarea name="GhiChu" rows="2" style="width:100%;font-family:var(--font-body);font-size:0.85rem;padding:0.65rem 0.85rem;border:1px solid var(--border-light);border-radius:var(--radius-btn);background:var(--bg-card);color:var(--text-primary);" placeholder="Ghi chú cho đơn hàng (không bắt buộc)..."></textarea>
+                            <textarea name="GhiChu" rows="2" class="form-input-glass" placeholder="Ghi chú cho đơn hàng..."></textarea>
                         </div>
-                        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">
+                        <button type="submit" class="btn-glass-primary" style="width:100%;justify-content:center;">
                             <i class="bi bi-check-circle"></i> Xác nhận đặt hàng — @Model.Total.ToString("N0")₫
                         </button>
                     </form>
                 </div>
             </div>
             <div class="col-lg-5">
-                <div style="background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-card);padding:1.5rem;">
-                    <h3 style="font-family:var(--font-display);font-size:1.3rem;font-weight:600;margin-bottom:1.25rem;">Đơn hàng của bạn</h3>
+                <div class="order-summary-glass animate-fade-in-up" style="animation-delay:0.1s;">
+                    <h3><i class="bi bi-receipt" style="margin-right:0.5rem;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></i> Đơn hàng của bạn</h3>
                     @if (Model.CartItems != null)
                     {
                         @foreach (var item in Model.CartItems)
                         {
-                            <div class="d-flex justify-content-between align-items-center mb-2" style="font-size:0.9rem;">
+                            <div class="order-item-glass">
                                 <div>
-                                    <span style="font-weight:500;">@item.SanPham?.TenSanPham</span>
+                                    <span class="item-name">@item.SanPham?.TenSanPham</span>
                                     <br>
-                                    <span style="color:var(--text-muted);font-size:0.8rem;">Số lượng: @item.SoLuong</span>
+                                    <span class="item-qty">Số lượng: @item.SoLuong</span>
                                 </div>
-                                <strong style="color:var(--accent);">@((item.SoLuong * item.DonGia).ToString("N0"))₫</strong>
+                                <span class="item-total">@((item.SoLuong * item.DonGia).ToString("N0"))₫</span>
                             </div>
-                            <hr style="border-color:var(--border-light);margin:0.5rem 0;">
+                            <hr class="order-divider">
                         }
                     }
-                    <div class="d-flex justify-content-between" style="font-size:1.1rem;margin-top:0.75rem;">
-                        <span style="font-weight:600;">Tổng cộng:</span>
-                        <strong style="color:var(--accent);">@Model.Total.ToString("N0")₫</strong>
+                    <div class="order-total-glass">
+                        <span class="total-label">Tổng cộng:</span>
+                        <span class="total-amount">@Model.Total.ToString("N0")₫</span>
                     </div>
                 </div>
             </div>

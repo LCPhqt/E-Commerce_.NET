@@ -5,34 +5,48 @@
     ViewData["ActivePage"] = "Products";
 }
 
-<div class="page-header">
-    <h4>Xóa sản phẩm</h4>
-    <a href="/Admin/Products/Index" class="btn-editorial-admin"><i class="bi bi-arrow-left"></i> Quay lại</a>
-</div>
-
-@if (Model.Product == null)
-{
-    <div class="alert-editorial-admin error">Sản phẩm không tồn tại.</div>
-}
-else
-{
-    <div class="card-editorial text-center py-5">
-        <i class="bi bi-exclamation-triangle" style="font-size: 64px; color: var(--accent);"></i>
-        <h3 style="font-family:var(--font-display);font-size:1.3rem;font-weight:600;margin-top:1rem;">Bạn có chắc muốn xóa sản phẩm này?</h3>
-        <p style="color:var(--text-muted);">Hành động này không thể hoàn tác.</p>
-        <div style="max-width:400px;margin:1.5rem auto;">
-            <table style="width:100%;font-family:var(--font-body);font-size:0.9rem;">
-                <tr><td style="padding:0.5rem;font-weight:500;color:var(--text-secondary);">Tên sản phẩm</td><td style="padding:0.5rem;">@Model.Product.TenSanPham</td></tr>
-                <tr><td style="padding:0.5rem;font-weight:500;color:var(--text-secondary);">Danh mục</td><td style="padding:0.5rem;">@Model.Product.DanhMuc?.Ten</td></tr>
-                <tr><td style="padding:0.5rem;font-weight:500;color:var(--text-secondary);">Giá</td><td style="padding:0.5rem;">@Model.Product.Gia.ToString("N0")₫</td></tr>
-                <tr><td style="padding:0.5rem;font-weight:500;color:var(--text-secondary);">Tồn kho</td><td style="padding:0.5rem;">@Model.Product.SoLuongTon</td></tr>
-            </table>
-        </div>
-        <form method="post">
-            <div class="d-flex gap-2 justify-content-center">
-                <button type="submit" class="btn-editorial-admin danger"><i class="bi bi-trash"></i> Xác nhận xóa</button>
-                <a href="/Admin/Products/Index" class="btn-editorial-admin">Hủy</a>
-            </div>
-        </form>
+<div class="admin-light-section">
+    <div class="page-header">
+        <h4>Xóa sản phẩm</h4>
+        <a href="/Admin/Products/Index" class="admin-light-btn"><i class="bi bi-arrow-left"></i> Quay lại</a>
     </div>
-}
+
+    @if (Model.Product == null)
+    {
+        <div style="padding:1rem;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b;">Sản phẩm không tồn tại.</div>
+    }
+    else
+    {
+        <div class="admin-light-card text-center py-5">
+            <i class="bi bi-exclamation-triangle" style="font-size:56px;color:#f59e0b;"></i>
+            <h3 style="font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:600;color:#111111;margin-top:1rem;">Bạn có chắc muốn xóa sản phẩm này?</h3>
+            <p style="color:#6b6560;font-size:0.88rem;">Hành động này không thể hoàn tác.</p>
+            <div style="max-width:400px;margin:1.5rem auto;">
+                <table style="width:100%;font-size:0.88rem;">
+                    <tr>
+                        <td style="padding:0.5rem;font-weight:500;color:#6b6560;">Tên sản phẩm</td>
+                        <td style="padding:0.5rem;color:#111111;">@Model.Product.TenSanPham</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5rem;font-weight:500;color:#6b6560;">Danh mục</td>
+                        <td style="padding:0.5rem;color:#111111;">@Model.Product.DanhMuc?.Ten</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5rem;font-weight:500;color:#6b6560;">Giá</td>
+                        <td style="padding:0.5rem;color:#111111;">@Model.Product.Gia.ToString("N0")₫</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0.5rem;font-weight:500;color:#6b6560;">Tồn kho</td>
+                        <td style="padding:0.5rem;color:#111111;">@Model.Product.SoLuongTon</td>
+                    </tr>
+                </table>
+            </div>
+            <form method="post">
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="submit" class="admin-light-btn danger"><i class="bi bi-trash"></i> Xác nhận xóa</button>
+                    <a href="/Admin/Products/Index" class="admin-light-btn">Hủy</a>
+                </div>
+            </form>
+        </div>
+    }
+</div>
