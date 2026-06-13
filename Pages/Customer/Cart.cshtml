@@ -5,77 +5,84 @@
 }
 
 <section class="container py-4">
-    <div class="section-header">
-        <h1 class="section-title">Giỏ hàng</h1>
+    <div class="section-header-glass">
+        <h1 class="section-title-glass">Giỏ hàng</h1>
     </div>
 
     @if (Model.CartItems == null || !Model.CartItems.Any())
     {
-        <div class="text-center py-5" style="border:1px solid var(--border-light);border-radius:var(--radius-card);">
-            <i class="bi bi-cart-x" style="font-size: 64px; color: var(--text-muted);"></i>
-            <p class="text-secondary mt-3">Giỏ hàng trống.</p>
-            <a href="/Customer/Products" class="btn-editorial" style="display:inline-flex;">
+        <div class="empty-state-glass">
+            <i class="bi bi-cart-x empty-icon"></i>
+            <p>Giỏ hàng trống. Hãy thêm sản phẩm bạn yêu thích!</p>
+            <a href="/Customer/Products" class="btn-glass-primary" style="display:inline-flex;">
                 <i class="bi bi-arrow-right"></i> Mua sắm ngay
             </a>
         </div>
     }
     else
     {
-        <div class="row">
+        <div class="row g-4">
             <div class="col-lg-8">
-                @foreach (var item in Model.CartItems)
-                {
-                    <div class="cart-item">
-                        @if (!string.IsNullOrEmpty(item.SanPham?.HinhAnhUrl))
-                        {
-                            <img src="@item.SanPham.HinhAnhUrl" class="cart-item-image" alt="@item.SanPham.TenSanPham" onerror="fallbackImg(this)">
-                        }
-                        else
-                        {
-                            <div class="cart-item-image d-flex align-items-center justify-content-center" style="background:var(--bg-page);color:var(--text-muted);">
-                                <i class="bi bi-image"></i>
+                <div class="stagger-children">
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="cart-item-glass">
+                            @if (!string.IsNullOrEmpty(item.SanPham?.HinhAnhUrl))
+                            {
+                                <img src="@item.SanPham.HinhAnhUrl" class="cart-item-image-glass" alt="@item.SanPham.TenSanPham" onerror="fallbackImg(this)">
+                            }
+                            else
+                            {
+                                <div class="cart-item-image-placeholder">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                            }
+                            <div>
+                                <p class="cart-item-title-glass">@item.SanPham?.TenSanPham</p>
+                                <p class="cart-item-price-glass">@item.DonGia.ToString("N0")₫ / sản phẩm</p>
+                                <div class="cart-item-actions-glass">
+                                    <form method="post" asp-page="/Customer/Cart" asp-page-handler="UpdateQuantity" asp-route-cartItemId="@item.Id" style="display:flex;align-items:center;gap:0.4rem;">
+                                        <button type="submit" name="quantity" value="@(item.SoLuong - 1)" class="qty-btn-glass" @(item.SoLuong <= 1 ? "disabled" : "")>
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                        <span class="qty-value-glass">@item.SoLuong</span>
+                                        <button type="submit" name="quantity" value="@(item.SoLuong + 1)" class="qty-btn-glass">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        }
-                        <div>
-                            <p class="cart-item-title">@item.SanPham?.TenSanPham</p>
-                            <p class="cart-item-price">@item.DonGia.ToString("N0")₫ / sản phẩm</p>
-                            <div class="cart-item-actions mt-1">
-                                <form method="post" asp-page="/Customer/Cart" asp-page-handler="UpdateQuantity" asp-route-cartItemId="@item.Id" style="display:flex;align-items:center;gap:0.5rem;">
-                                    <button type="submit" name="quantity" value="@(item.SoLuong - 1)" style="border:1px solid var(--border-light);border-radius:var(--radius-btn);background:transparent;padding:0.2rem 0.6rem;font-size:0.85rem;cursor:pointer;" @(item.SoLuong <= 1 ? "disabled" : "")>-</button>
-                                    <span style="min-width:20px;text-align:center;font-weight:500;">@item.SoLuong</span>
-                                    <button type="submit" name="quantity" value="@(item.SoLuong + 1)" style="border:1px solid var(--border-light);border-radius:var(--radius-btn);background:transparent;padding:0.2rem 0.6rem;font-size:0.85rem;cursor:pointer;">+</button>
+                            <div class="cart-item-total-glass">
+                                <p class="total-price">@((item.SoLuong * item.DonGia).ToString("N0"))₫</p>
+                                <form method="post" asp-page="/Customer/Cart" asp-page-handler="Remove" asp-route-cartItemId="@item.Id">
+                                    <button type="submit" class="remove-btn">
+                                        <i class="bi bi-trash3"></i> Xoá
+                                    </button>
                                 </form>
                             </div>
                         </div>
-                        <div style="text-align:right;">
-                            <p style="font-family:var(--font-body);font-weight:500;font-size:1.1rem;color:var(--accent);margin-bottom:0.5rem;">
-                                @((item.SoLuong * item.DonGia).ToString("N0"))₫
-                            </p>
-                            <form method="post" asp-page="/Customer/Cart" asp-page-handler="Remove" asp-route-cartItemId="@item.Id">
-                                <button type="submit" style="border:none;background:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;">
-                                    <i class="bi bi-trash"></i> Xoá
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
             <div class="col-lg-4">
-                <div style="background:var(--bg-card);border:1px solid var(--border-light);border-radius:var(--radius-card);padding:1.5rem;">
-                    <h3 style="font-family:var(--font-display);font-size:1.3rem;font-weight:600;margin-bottom:1rem;">Tổng giỏ hàng</h3>
-                    <div class="d-flex justify-content-between mb-2" style="font-size:0.9rem;">
+                <div class="cart-summary-glass animate-scale-in">
+                    <h3>Tổng giỏ hàng</h3>
+                    <div class="summary-row">
                         <span style="color:var(--text-secondary);">Tạm tính:</span>
                         <strong>@Model.Total.ToString("N0")₫</strong>
                     </div>
-                    <hr style="border-color:var(--border-light);">
-                    <div class="d-flex justify-content-between mb-3" style="font-size:1.1rem;">
-                        <span style="font-weight:600;">Tổng cộng:</span>
-                        <strong style="color:var(--accent);">@Model.Total.ToString("N0")₫</strong>
+                    <div class="summary-row">
+                        <span style="color:var(--text-secondary);">Phí vận chuyển:</span>
+                        <strong>Miễn phí</strong>
                     </div>
-                    <a href="/Customer/Checkout" class="btn-primary" style="display:flex;justify-content:center;width:100%;">
+                    <div class="summary-row total">
+                        <span>Tổng cộng:</span>
+                        <span>@Model.Total.ToString("N0")₫</span>
+                    </div>
+                    <a href="/Customer/Checkout" class="btn-glass-primary" style="display:flex;justify-content:center;width:100%;margin-top:1.25rem;">
                         <i class="bi bi-credit-card"></i> Thanh toán
                     </a>
-                    <a href="/Customer/Products" class="btn-secondary" style="display:flex;justify-content:center;width:100%;margin-top:0.5rem;">
+                    <a href="/Customer/Products" class="btn-glass-secondary" style="display:flex;justify-content:center;width:100%;margin-top:0.65rem;">
                         <i class="bi bi-arrow-left"></i> Tiếp tục mua sắm
                     </a>
                 </div>

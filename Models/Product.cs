@@ -15,8 +15,7 @@ public class Product
     [Display(Name = "Tên sản phẩm")]
     public string TenSanPham { get; set; } = string.Empty;
 
-    [MaxLength(2000)]
-    [Display(Name = "Mô tả")]
+    [Display(Name = "Mô tả chi tiết")]
     public string? MoTa { get; set; }
 
     [Required]

@@ -51,7 +51,7 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.TenSanPham).HasMaxLength(200).IsRequired().IsUnicode(true);
-            entity.Property(e => e.MoTa).HasMaxLength(2000).IsUnicode(true);
+            entity.Property(e => e.MoTa).HasColumnType("nvarchar(max)").IsUnicode(true);
             entity.Property(e => e.Gia).HasColumnType("decimal(18,2)").IsRequired();
             entity.Property(e => e.HinhAnhUrl).HasMaxLength(500);
             entity.Property(e => e.SoLuongTon).IsRequired();

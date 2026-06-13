@@ -7,6 +7,7 @@
 
 <div class="page-header">
     <h4>Quản lý đơn hàng</h4>
+    <span style="font-size:0.82rem;color:var(--admin-text-muted);">@Model.Orders.Count() đơn hàng</span>
 </div>
 
 <div class="table-admin">
@@ -26,16 +27,16 @@
             <tbody>
                 @if (!Model.Orders.Any())
                 {
-                    <tr><td colspan="7" class="text-center py-4" style="color:var(--text-muted);">Chưa có đơn hàng nào.</td></tr>
+                    <tr><td colspan="7" class="text-center py-4" style="color:var(--admin-text-muted);">Chưa có đơn hàng nào.</td></tr>
                 }
                 @foreach (var order in Model.Orders)
                 {
                     <tr>
-                        <td style="font-weight:600;">#@order.Id</td>
+                        <td style="font-weight:600;color:var(--admin-text);">#@order.Id</td>
                         <td>@order.NguoiDung?.Ho @order.NguoiDung?.Ten</td>
                         <td>@order.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>@(order.OrderDetails?.Count ?? 0)</td>
-                        <td style="font-weight:500;">@order.TongTien.ToString("N0")₫</td>
+                        <td style="font-weight:500;color:var(--admin-text);">@order.TongTien.ToString("N0")₫</td>
                         <td>
                             <span class="status-badge
                                 @(order.TrangThai == "Chờ xử lý" ? "status-pending" :
@@ -48,13 +49,13 @@
                         <td>
                             <form method="post" class="d-flex gap-1">
                                 <input type="hidden" name="orderId" value="@order.Id" />
-                                <select name="trangThai" style="font-family:var(--font-body);font-size:0.8rem;padding:0.3rem 0.5rem;border:1px solid var(--border-light);border-radius:var(--radius-btn);">
+                                <select name="trangThai" class="form-glass" style="width:auto;padding:0.3rem 1.5rem 0.3rem 0.5rem;font-size:0.78rem;">
                                     <option value="Chờ xử lý" selected="@(order.TrangThai == "Chờ xử lý")">Chờ xử lý</option>
                                     <option value="Đang giao" selected="@(order.TrangThai == "Đang giao")">Đang giao</option>
                                     <option value="Đã giao" selected="@(order.TrangThai == "Đã giao")">Đã giao</option>
                                     <option value="Đã hủy" selected="@(order.TrangThai == "Đã hủy")">Đã hủy</option>
                                 </select>
-                                <button type="submit" class="btn-editorial-admin" style="padding:0.3rem 0.6rem;">
+                                <button type="submit" class="btn-admin" style="padding:0.3rem 0.6rem;">
                                     <i class="bi bi-check"></i>
                                 </button>
                             </form>
