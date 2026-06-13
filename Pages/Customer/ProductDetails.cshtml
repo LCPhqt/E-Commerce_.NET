@@ -71,8 +71,8 @@ else
 
             @if (!string.IsNullOrEmpty(Model.Product.MoTa))
             {
-                <div class="detail-desc">
-                    <p>@Model.Product.MoTa</p>
+                <div class="detail-desc rich-content">
+                    @Html.Raw(Model.Product.MoTa)
                 </div>
             }
 
