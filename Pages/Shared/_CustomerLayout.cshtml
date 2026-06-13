@@ -67,6 +67,7 @@
                                 <i class="bi bi-person-circle"></i> @User.FindFirst("FullName")?.Value
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
+                                <li><a class="dropdown-item" href="/Account/Profile"><i class="bi bi-person-circle"></i> Thông tin tài khoản</a></li>
                                 <li><a class="dropdown-item" href="/Customer/Orders"><i class="bi bi-clock-history"></i> Đơn hàng</a></li>
                                 @if (User.IsInRole("Admin"))
                                 {

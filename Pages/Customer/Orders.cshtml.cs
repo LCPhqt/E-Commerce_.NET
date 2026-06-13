@@ -23,4 +23,20 @@ public class OrdersModel : PageModel
         var username = User.Identity!.Name!;
         Orders = await _orderService.GetUserOrdersAsync(username);
     }
+
+    public async Task<IActionResult> OnPostCancelAsync(int orderId)
+    {
+        var username = User.Identity!.Name!;
+        try
+        {
+            await _orderService.CancelOrderAsync(orderId, username);
+            TempData["SuccessMessage"] = $"Đơn hàng #{orderId} đã được hủy thành công.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+
+        return RedirectToPage();
+    }
 }

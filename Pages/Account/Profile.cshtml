@@ -1,0 +1,128 @@
+@page
+@model ECommerceFinalProject.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "Thông tin tài khoản";
+    Layout = "_CustomerLayout";
+}
+
+<section class="container py-4">
+    <div class="section-header-glass">
+        <h1 class="section-title-glass">Thông tin tài khoản</h1>
+    </div>
+
+    @if (Model.UserInfo != null)
+    {
+        <div class="row g-4">
+            <!-- Profile Info Card -->
+            <div class="col-lg-5">
+                <div class="profile-card-glass">
+                    <div class="text-center mb-4">
+                        <div class="profile-avatar mx-auto">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <h4 style="font-weight:600;margin-bottom:0.25rem;">
+                            @Model.UserInfo.Ho @Model.UserInfo.Ten
+                        </h4>
+                        <span class="status-badge-glass @(Model.UserInfo.VaiTro == "Admin" ? "status-delivered" : "status-pending")">
+                            @Model.UserInfo.VaiTro
+                        </span>
+                    </div>
+
+                    <form method="post" asp-page-handler="UpdateInfo">
+                        <div class="profile-info-group">
+                            <span class="profile-label">Tên đăng nhập</span>
+                            <div class="profile-value" style="background:var(--bg-glass-dark);">
+                                @Model.UserInfo.TenDangNhap
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="profile-info-group">
+                                    <label class="profile-label" for="ho">Họ</label>
+                                    <input type="text" id="ho" name="ho" class="form-input-glass"
+                                           value="@Model.UserInfo.Ho" />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="profile-info-group">
+                                    <label class="profile-label" for="ten">Tên</label>
+                                    <input type="text" id="ten" name="ten" class="form-input-glass"
+                                           value="@Model.UserInfo.Ten" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-info-group">
+                            <label class="profile-label" for="email">Email</label>
+                            <input type="email" id="email" name="email" class="form-input-glass"
+                                   value="@Model.UserInfo.Email" />
+                        </div>
+
+                        <div class="profile-info-group">
+                            <label class="profile-label" for="soDienThoai">Số điện thoại</label>
+                            <input type="text" id="soDienThoai" name="soDienThoai" class="form-input-glass"
+                                   value="@Model.UserInfo.SoDienThoai" />
+                        </div>
+
+                        <div class="profile-info-group">
+                            <label class="profile-label" for="ngaySinh">Ngày sinh</label>
+                            <input type="date" id="ngaySinh" name="ngaySinh" class="form-input-glass"
+                                   value="@Model.UserInfo.NgaySinh?.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <button type="submit" class="btn-glass-primary" style="width:100%;margin-top:0.5rem;">
+                            <i class="bi bi-check-lg"></i> Lưu thay đổi
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Stats & Activity -->
+            <div class="col-lg-7">
+                <div class="profile-card-glass">
+                    <h5 style="font-weight:600;margin-bottom:1.25rem;">
+                        <i class="bi bi-graph-up" style="margin-right:0.5rem;color:var(--accent-primary);"></i>
+                        Thống kê
+                    </h5>
+                    <div class="profile-stats">
+                        <div class="profile-stat-card">
+                            <div class="stat-number">@Model.TotalOrders</div>
+                            <span class="stat-label">Tổng đơn hàng</span>
+                        </div>
+                        <div class="profile-stat-card">
+                            <div class="stat-number">@Model.PendingOrders</div>
+                            <span class="stat-label">Đang chờ xử lý</span>
+                        </div>
+                        <div class="profile-stat-card">
+                            <div class="stat-number">@Model.TotalSpent.ToString("N0")₫</div>
+                            <span class="stat-label">Đã chi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="profile-card-glass mt-4">
+                    <h5 style="font-weight:600;margin-bottom:1.25rem;">
+                        <i class="bi bi-lightning" style="margin-right:0.5rem;color:var(--accent-primary);"></i>
+                        Tiện ích
+                    </h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/Customer/Orders" class="btn-glass-secondary">
+                            <i class="bi bi-clock-history"></i> Đơn hàng của tôi
+                        </a>
+                        <a href="/Customer/Products" class="btn-glass-secondary">
+                            <i class="bi bi-grid"></i> Mua sắm
+                        </a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="/Admin/Dashboard" class="btn-glass-secondary">
+                                <i class="bi bi-shield-lock"></i> Trang Admin
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</section>

@@ -12,4 +12,5 @@ public interface IOrderService
     Task<decimal> GetTotalRevenueAsync();
     Task<int> GetTotalOrdersAsync();
     Task<Dictionary<string, int>> GetOrderStatusCountsAsync();
+    Task CancelOrderAsync(int orderId, string username);
 }

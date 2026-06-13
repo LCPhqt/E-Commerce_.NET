@@ -61,6 +61,18 @@
                             <strong>Ghi chú:</strong> @order.GhiChu
                         </div>
                     }
+
+                    @if (order.TrangThai == "Chờ xử lý")
+                    {
+                        <div class="mt-3">
+                            <form method="post" asp-page-handler="Cancel" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng #@order.Id?');">
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <button type="submit" class="btn-glass-danger">
+                                    <i class="bi bi-x-circle"></i> Hủy đơn hàng
+                                </button>
+                            </form>
+                        </div>
+                    }
                 </div>
             }
         </div>

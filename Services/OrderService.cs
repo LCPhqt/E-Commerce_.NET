@@ -129,4 +129,33 @@ public class OrderService : IOrderService
             .Select(g => new { Status = g.Key, Count = g.Count() })
             .ToDictionaryAsync(g => g.Status, g => g.Count);
     }
+
+    public async Task CancelOrderAsync(int orderId, string username)
+    {
+        var order = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .FirstOrDefaultAsync(o => o.Id == orderId && o.TenDangNhap == username);
+
+        if (order == null)
+            throw new InvalidOperationException("Đơn hàng không tồn tại.");
+
+        if (order.TrangThai != "Chờ xử lý")
+            throw new InvalidOperationException("Chỉ có thể hủy đơn hàng ở trạng thái 'Chờ xử lý'.");
+
+        // Restore stock
+        if (order.OrderDetails != null)
+        {
+            foreach (var detail in order.OrderDetails)
+            {
+                var product = await _context.Products.FindAsync(detail.SanPhamId);
+                if (product != null)
+                {
+                    product.SoLuongTon += detail.SoLuong;
+                }
+            }
+        }
+
+        order.TrangThai = "Đã hủy";
+        await _context.SaveChangesAsync();
+    }
 }
