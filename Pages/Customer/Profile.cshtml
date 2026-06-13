@@ -1,0 +1,318 @@
+@page
+@model ECommerceFinalProject.Pages.Customer.ProfileModel
+@{
+    ViewData["Title"] = "Thông tin người dùng";
+}
+
+<!-- Editorial Profile Hero -->
+<section class="profile-hero">
+    <div class="container">
+        <div class="profile-hero-inner">
+            <div class="profile-avatar profile-avatar-clickable" id="avatarTrigger" title="Nhấp để thay đổi ảnh đại diện">
+                @if (!string.IsNullOrEmpty(Model.CurrentUser?.AvatarUrl))
+                {
+                    <img src="@Model.CurrentUser.AvatarUrl" alt="avatar" class="profile-avatar-img" />
+                }
+                else
+                {
+                    <span class="profile-avatar-letter">
+                        @(string.IsNullOrEmpty(Model.CurrentUser?.Ten) ? "U" : Model.CurrentUser.Ten.Substring(0, 1).ToUpper())
+                    </span>
+                }
+                <span class="profile-avatar-overlay">
+                    <i class="bi bi-camera-fill"></i>
+                </span>
+            </div>
+            <div class="profile-hero-text">
+                <span class="profile-eyebrow">Hồ sơ cá nhân</span>
+                <h1 class="profile-name">@Model.HoTen</h1>
+                <p class="profile-sub">@Model.CurrentUser?.Email</p>
+            </div>
+            <div class="profile-hero-meta">
+                <div class="profile-hero-meta-item">
+                    <span class="profile-hero-meta-label">Vai trò</span>
+                    <span class="profile-badge">@(Model.CurrentUser?.VaiTro == "Admin" ? "Quản trị viên" : "Khách hàng")</span>
+                </div>
+                <div class="profile-hero-meta-item">
+                    <span class="profile-hero-meta-label">Thành viên từ</span>
+                    <span class="profile-hero-meta-value">@(Model.CurrentUser?.NgaySinh?.Year.ToString() ?? "—")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Body: 2-column layout -->
+<section class="container profile-body">
+    <div class="row g-4">
+        <!-- LEFT: Sidebar thông tin nhanh -->
+        <aside class="col-lg-4">
+            <div class="profile-side-card">
+                <div class="profile-side-header">
+                    <i class="bi bi-person-vcard"></i>
+                    <h3>Thông tin tài khoản</h3>
+                </div>
+
+                <ul class="profile-info-list">
+                    <li>
+                        <span class="profile-info-icon"><i class="bi bi-person-badge"></i></span>
+                        <div class="profile-info-content">
+                            <span class="profile-info-label">Tên đăng nhập</span>
+                            <strong class="profile-info-value">@Model.CurrentUser?.TenDangNhap</strong>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="profile-info-icon"><i class="bi bi-envelope"></i></span>
+                        <div class="profile-info-content">
+                            <span class="profile-info-label">Email</span>
+                            <strong class="profile-info-value">@(Model.CurrentUser?.Email ?? "Chưa cập nhật")</strong>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="profile-info-icon"><i class="bi bi-telephone"></i></span>
+                        <div class="profile-info-content">
+                            <span class="profile-info-label">Số điện thoại</span>
+                            <strong class="profile-info-value">@(string.IsNullOrEmpty(Model.CurrentUser?.SoDienThoai) ? "Chưa cập nhật" : Model.CurrentUser.SoDienThoai)</strong>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="profile-info-icon"><i class="bi bi-calendar-event"></i></span>
+                        <div class="profile-info-content">
+                            <span class="profile-info-label">Ngày sinh</span>
+                            <strong class="profile-info-value">@(Model.CurrentUser?.NgaySinh?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</strong>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="profile-info-icon"><i class="bi bi-geo-alt"></i></span>
+                        <div class="profile-info-content">
+                            <span class="profile-info-label">Địa chỉ</span>
+                            <strong class="profile-info-value">@(string.IsNullOrEmpty(Model.CurrentUser?.DiaChi) ? "Chưa cập nhật" : Model.CurrentUser.DiaChi)</strong>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- RIGHT: Form chỉnh sửa -->
+        <div class="col-lg-8">
+            <!-- Avatar upload card -->
+            <div class="profile-edit-card mb-4">
+                <div class="profile-edit-header">
+                    <div>
+                        <span class="profile-eyebrow">Hình ảnh</span>
+                        <h2 class="profile-edit-title">Ảnh đại diện</h2>
+                        <p class="profile-edit-sub">Tải lên ảnh đại diện để cá nhân hóa tài khoản của bạn.</p>
+                    </div>
+                    <div class="profile-edit-icon">
+                        <i class="bi bi-image"></i>
+                    </div>
+                </div>
+
+                @if (TempData["AvatarSuccess"] != null)
+                {
+                    <div class="profile-flash profile-flash-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>@TempData["AvatarSuccess"]</span>
+                    </div>
+                }
+                @if (TempData["AvatarError"] != null)
+                {
+                    <div class="profile-flash profile-flash-error">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>@TempData["AvatarError"]</span>
+                    </div>
+                }
+
+                <div class="avatar-uploader">
+                    <div class="avatar-uploader-preview" id="avatarPreview">
+                        @if (!string.IsNullOrEmpty(Model.CurrentUser?.AvatarUrl))
+                        {
+                            <img src="@Model.CurrentUser.AvatarUrl" alt="avatar" />
+                        }
+                        else
+                        {
+                            <div class="avatar-uploader-placeholder">
+                                <i class="bi bi-person"></i>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="avatar-uploader-body">
+                        <form method="post" enctype="multipart/form-data" asp-page-handler="UploadAvatar" id="avatarForm">
+                            <label for="avatarFileInput" class="profile-avatar-btn profile-avatar-btn-primary">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <span>Chọn ảnh mới</span>
+                                <input type="file" id="avatarFileInput" name="AvatarFile" accept="image/png,image/jpeg,image/webp" hidden />
+                            </label>
+
+                            <div class="avatar-uploader-meta">
+                                <i class="bi bi-info-circle"></i>
+                                JPG, PNG hoặc WEBP — tối đa 2MB.
+                            </div>
+
+                            <div class="avatar-uploader-actions" id="avatarActions" style="display:none;">
+                                <button type="button" class="profile-avatar-btn profile-avatar-btn-ghost" id="avatarCancel">
+                                    <i class="bi bi-x"></i> Hủy
+                                </button>
+                                <button type="submit" class="profile-avatar-btn profile-avatar-btn-success">
+                                    <i class="bi bi-check2"></i> Lưu ảnh
+                                </button>
+                            </div>
+                        </form>
+
+                        @if (!string.IsNullOrEmpty(Model.CurrentUser?.AvatarUrl))
+                        {
+                            <form method="post" asp-page-handler="RemoveAvatar" class="mt-2">
+                                <button type="submit" class="profile-avatar-btn profile-avatar-btn-link">
+                                    <i class="bi bi-trash"></i> Xóa ảnh hiện tại
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-edit-card">
+                <div class="profile-edit-header">
+                    <div>
+                        <span class="profile-eyebrow">Cập nhật</span>
+                        <h2 class="profile-edit-title">Chỉnh sửa thông tin</h2>
+                        <p class="profile-edit-sub">Giữ thông tin chính xác để việc đặt hàng và giao nhận diễn ra nhanh chóng.</p>
+                    </div>
+                    <div class="profile-edit-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                </div>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="profile-flash profile-flash-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>@TempData["SuccessMessage"]</span>
+                    </div>
+                }
+
+                <form method="post" class="profile-form">
+                    <div asp-validation-summary="ModelOnly" class="profile-flash profile-flash-error"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="profile-label" for="ho">Họ <span class="required">*</span></label>
+                            <div class="profile-input-wrap">
+                                <i class="bi bi-person"></i>
+                                <input type="text" id="ho" asp-for="Input.Ho" class="profile-input" placeholder="Họ" required />
+                            </div>
+                            <span asp-validation-for="Input.Ho" class="profile-field-error"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="profile-label" for="ten">Tên <span class="required">*</span></label>
+                            <div class="profile-input-wrap">
+                                <i class="bi bi-person"></i>
+                                <input type="text" id="ten" asp-for="Input.Ten" class="profile-input" placeholder="Tên" required />
+                            </div>
+                            <span asp-validation-for="Input.Ten" class="profile-field-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="profile-label" for="ngaySinh">Ngày sinh</label>
+                            <div class="profile-input-wrap">
+                                <i class="bi bi-calendar-event"></i>
+                                <input type="date" id="ngaySinh" asp-for="Input.NgaySinh" class="profile-input" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="profile-label" for="soDienThoai">Số điện thoại</label>
+                            <div class="profile-input-wrap">
+                                <i class="bi bi-telephone"></i>
+                                <input type="tel" id="soDienThoai" asp-for="Input.SoDienThoai" class="profile-input" placeholder="VD: 0901234567" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="profile-label" for="email">Email</label>
+                        <div class="profile-input-wrap">
+                            <i class="bi bi-envelope"></i>
+                            <input type="email" id="email" asp-for="Input.Email" class="profile-input" placeholder="email@example.com" />
+                        </div>
+                        <span asp-validation-for="Input.Email" class="profile-field-error"></span>
+                    </div>
+
+            <div class="mt-3">
+                <label class="profile-label" for="diaChi">Địa chỉ</label>
+                <div class="profile-input-wrap profile-input-wrap-textarea">
+                    <i class="bi bi-geo-alt"></i>
+                    <textarea id="diaChi" asp-for="Input.DiaChi" class="profile-input" rows="3" maxlength="250" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
+                </div>
+                <div class="profile-counter" id="diaChiCounter">0/250</div>
+            </div>
+
+                    <div class="profile-actions">
+                        <a href="/Customer/Home" class="btn-ghost">
+                            <i class="bi bi-arrow-left"></i> Hủy
+                        </a>
+                        <button type="submit" class="btn-editorial">
+                            <i class="bi bi-check2-circle"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        var ta = document.getElementById('diaChi');
+        var counter = document.getElementById('diaChiCounter');
+        if (!ta || !counter) return;
+        var max = parseInt(ta.getAttribute('maxlength'), 10) || 250;
+        var update = function () {
+            var len = ta.value.length;
+            counter.textContent = len + '/' + max;
+            counter.classList.toggle('is-warn', len >= max * 0.8 && len < max);
+            counter.classList.toggle('is-full', len >= max);
+        };
+        ta.addEventListener('input', update);
+        update();
+    })();
+
+    // Avatar uploader preview + hero click trigger
+    (function () {
+        var heroTrigger = document.getElementById('avatarTrigger');
+        var fileInput = document.getElementById('avatarFileInput');
+        var preview = document.getElementById('avatarPreview');
+        var actions = document.getElementById('avatarActions');
+        var cancelBtn = document.getElementById('avatarCancel');
+        var originalPreviewHTML = preview ? preview.innerHTML : '';
+
+        if (heroTrigger && fileInput) {
+            heroTrigger.addEventListener('click', function () {
+                fileInput.click();
+            });
+        }
+
+        if (fileInput && preview && actions) {
+            fileInput.addEventListener('change', function (e) {
+                var file = e.target.files && e.target.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function (ev) {
+                    preview.innerHTML = '<img src="' + ev.target.result + '" alt="preview" />';
+                };
+                reader.readAsDataURL(file);
+                actions.style.display = 'flex';
+            });
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function () {
+                    fileInput.value = '';
+                    preview.innerHTML = originalPreviewHTML;
+                    actions.style.display = 'none';
+                });
+            }
+        }
+    })();
+</script>

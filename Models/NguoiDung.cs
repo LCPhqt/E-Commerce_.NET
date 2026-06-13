@@ -29,10 +29,20 @@ public class NguoiDung
     [MaxLength(20)]
     public string? SoDienThoai { get; set; }
 
+    [MaxLength(500)]
+    [Display(Name = "Địa chỉ")]
+    public string? DiaChi { get; set; }
+
     [MaxLength(255)]
     public string? Email { get; set; }
 
     [MaxLength(20)]
     [Display(Name = "Vai trò")]
     public string VaiTro { get; set; } = "User";
+
+    public bool DaXacThuc { get; set; } = false;
+
+    [MaxLength(255)]
+    [Display(Name = "Ảnh đại diện")]
+    public string? AvatarUrl { get; set; }
 }

@@ -67,6 +67,7 @@
                                 <i class="bi bi-person-circle"></i> @User.FindFirst("FullName")?.Value
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/Customer/Profile"><i class="bi bi-person-vcard"></i> Thông tin người dùng</a></li>
                                 <li><a class="dropdown-item" href="/Customer/Orders"><i class="bi bi-clock-history"></i> Đơn hàng</a></li>
                                 @if (User.IsInRole("Admin"))
                                 {
@@ -126,6 +127,7 @@
                     <ul class="footer-links">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
+                            <li><a href="/Customer/Profile">Thông tin người dùng</a></li>
                             <li><a href="/Customer/Orders">Đơn hàng của tôi</a></li>
                             <li><a href="/Account/Logout">Đăng xuất</a></li>
                         }

@@ -6,14 +6,20 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using ECommerceFinalProject.Data;
 using ECommerceFinalProject.Models;
+using ECommerceFinalProject.Services;
 
 namespace ECommerceFinalProject.Pages.Account;
 
 public class LoginModel : PageModel
 {
     private readonly AppDbContext _context;
+    private readonly IEmailService _emailService;
 
-    public LoginModel(AppDbContext context) => _context = context;
+    public LoginModel(AppDbContext context, IEmailService emailService)
+    {
+        _context = context;
+        _emailService = emailService;
+    }
 
     public IActionResult OnGet()
     {
@@ -26,7 +32,7 @@ public class LoginModel : PageModel
     {
         if (string.IsNullOrWhiteSpace(TaiKhoan) || string.IsNullOrWhiteSpace(MatKhau))
         {
-            ModelState.AddModelError("", "Vui lòng nhập tài khoản và mật khẩu.");
+            ModelState.AddModelError("", "Vui long nhap tai khoan va mat khau.");
             ViewData["TaiKhoan"] = TaiKhoan;
             return Page();
         }
@@ -40,36 +46,47 @@ public class LoginModel : PageModel
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(MatKhau, user.MatKhau))
         {
-            ModelState.AddModelError("", "Tài khoản hoặc mật khẩu không đúng.");
+            ModelState.AddModelError("", "Tai khoan hoac mat khau khong dung.");
             ViewData["TaiKhoan"] = TaiKhoan;
             return Page();
         }
 
-        var displayName = $"{user.Ho} {user.Ten}".Trim();
-        var claims = new[]
+        // Luu thong tin tam de xac thuc OTP
+        TempData["PendingLogin"] = user.TenDangNhap;
+        TempData["Email"] = user.Email;
+        TempData["GhiNho"] = GhiNho.ToString().ToLower();
+
+        // Vo hieu hoa cac OTP cu
+        var oldOtps = await _context.XacThucEmail
+            .Where(x => x.TenDangNhap == user.TenDangNhap && !x.DaSuDung)
+            .ToListAsync();
+        foreach (var old in oldOtps)
+            old.DaSuDung = true;
+
+        // Tao OTP moi
+        var maOtp = new Random().Next(100000, 999999).ToString();
+        _context.XacThucEmail.Add(new XacThucEmail
         {
-            new Claim(ClaimTypes.NameIdentifier, user.TenDangNhap),
-            new Claim(ClaimTypes.Name, user.TenDangNhap),
-            new Claim("FullName", string.IsNullOrWhiteSpace(displayName) ? user.TenDangNhap : displayName),
-            new Claim(ClaimTypes.Role, user.VaiTro),
-            new Claim("Email", user.Email ?? "")
-        };
+            TenDangNhap = user.TenDangNhap,
+            MaXacThuc = maOtp,
+            ThoiGianGui = DateTime.Now,
+            ThoiGianHetHan = DateTime.Now.AddMinutes(5),
+            DaSuDung = false
+        });
+        await _context.SaveChangesAsync();
 
-        var identity = new ClaimsIdentity(claims, "Cookies");
-        var principal = new ClaimsPrincipal(identity);
+        // Gui email OTP (bat loi de van cho phep xac thuc neu email loi)
+        var hoTen = $"{user.Ho} {user.Ten}".Trim();
+        try
+        {
+            await _emailService.GuiMaXacThucAsync(user.Email ?? "", maOtp, hoTen);
+        }
+        catch
+        {
+            // Email loi, van cho phep xac thuc bang OTP trong database
+        }
 
-        await HttpContext.SignInAsync(
-            "Cookies",
-            principal,
-            new AuthenticationProperties
-            {
-                IsPersistent = GhiNho,
-                ExpiresUtc = GhiNho
-                    ? System.DateTimeOffset.UtcNow.AddDays(14)
-                    : System.DateTimeOffset.UtcNow.AddMinutes(30)
-            });
-
-        return RedirectAfterLogin(user.VaiTro);
+        return RedirectToPage("/Account/VerifyOTP", new { email = user.Email });
     }
 
     private IActionResult RedirectAfterLogin(ClaimsPrincipal principal) =>

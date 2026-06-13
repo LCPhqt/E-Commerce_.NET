@@ -14,7 +14,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
+// Dòng 18-26: Cấu hình Authentication (Cookie)
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
@@ -24,7 +26,7 @@ builder.Services.AddAuthentication("Cookies")
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = true;
     });
-
+// Dòng 28-32: Cấu hình Authorization Policy
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
@@ -135,6 +137,22 @@ using (var scope = app.Services.CreateScope())
         }
     }
     db.SaveChanges();
+
+    // Đảm bảo cột AvatarUrl tồn tại trên bảng NguoiDung (cho cả database cũ)
+    try
+    {
+        var hasAvatarColumn = db.Database.SqlQueryRaw<int>(
+            "SELECT 1 AS [Value] FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[NguoiDung]') AND name = 'AvatarUrl'").AsEnumerable().Any();
+        if (!hasAvatarColumn)
+        {
+            db.Database.ExecuteSqlRaw("ALTER TABLE [dbo].[NguoiDung] ADD [AvatarUrl] nvarchar(255) NULL");
+            Console.WriteLine("✅ Đã thêm cột AvatarUrl vào bảng NguoiDung.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("⚠️ Không thể tự động thêm cột AvatarUrl: " + ex.Message);
+    }
 }
 
 static void SeedMissingProducts(AppDbContext db)
