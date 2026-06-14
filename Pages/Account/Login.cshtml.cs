@@ -75,18 +75,27 @@ public class LoginModel : PageModel
         });
         await _context.SaveChangesAsync();
 
-        // Gui email OTP (bat loi de van cho phep xac thuc neu email loi)
+        // Gui email OTP — neu loi van cho redirect, truyen devOtp qua query
         var hoTen = $"{user.Ho} {user.Ten}".Trim();
+        var emailSent = true;
+        var emailError = "";
         try
         {
             await _emailService.GuiMaXacThucAsync(user.Email ?? "", maOtp, hoTen);
         }
-        catch
+        catch (Exception ex)
         {
-            // Email loi, van cho phep xac thuc bang OTP trong database
+            emailSent = false;
+            emailError = ex.Message;
+            // Van cho phep xac thuc bang OTP trong database
         }
 
-        return RedirectToPage("/Account/VerifyOTP", new { email = user.Email });
+        return RedirectToPage("/Account/VerifyOTP", new
+        {
+            email = user.Email,
+            devOtp = emailSent ? null : maOtp,
+            emailError = emailSent ? null : emailError
+        });
     }
 
     private IActionResult RedirectAfterLogin(ClaimsPrincipal principal) =>

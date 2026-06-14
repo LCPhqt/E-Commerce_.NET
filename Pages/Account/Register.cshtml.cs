@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ECommerceFinalProject.Data;
 using ECommerceFinalProject.Models;
 using ECommerceFinalProject.Services;
+using Microsoft.Extensions.Logging;
 
 namespace ECommerceFinalProject.Pages.Account;
 
@@ -11,11 +12,13 @@ public class RegisterModel : PageModel
 {
     private readonly AppDbContext _context;
     private readonly IEmailService _emailService;
+    private readonly ILogger<RegisterModel> _logger;
 
-    public RegisterModel(AppDbContext context, IEmailService emailService)
+    public RegisterModel(AppDbContext context, IEmailService emailService, ILogger<RegisterModel> logger)
     {
         _context = context;
         _emailService = emailService;
+        _logger = logger;
     }
 
     public IActionResult OnGet()
@@ -55,6 +58,12 @@ public class RegisterModel : PageModel
             return SaveFormData(TenDangNhap, Ho, Ten, NgaySinh, SoDienThoai, Email);
         }
 
+        if (MatKhau.Length > 8)
+        {
+            ModelState.AddModelError("", "Mat khau khong duoc qua 8 ky tu.");
+            return SaveFormData(TenDangNhap, Ho, Ten, NgaySinh, SoDienThoai, Email);
+        }
+
         bool exists = await _context.NguoiDung
             .AnyAsync(u => u.TenDangNhap == TenDangNhap || u.Email == Email.ToLower().Trim());
 
@@ -91,23 +100,38 @@ public class RegisterModel : PageModel
         });
         await _context.SaveChangesAsync();
 
-        // Gui email (bat loi de van cho phep xac thuc neu email loi)
+        // Gui email — neu loi SMTP thi van cho redirect, nhung danh dau loi
         var hoTen = $"{pendingUser.Ho} {pendingUser.Ten}".Trim();
         TempData["HoTen"] = hoTen;
+        var emailSent = true;
+        var emailError = "";
         try
         {
             await _emailService.GuiMaXacThucAsync(pendingUser.Email ?? Email, maOtp, hoTen);
         }
-        catch
+        catch (Exception ex)
         {
-            // Email loi, van cho phep xac thuc bang OTP trong database
+            emailSent = false;
+            emailError = ex.Message;
+            _logger.LogError(ex, "[Register] Failed to send OTP email to {Email}", pendingUser.Email);
+            TempData["EmailError"] = ex.Message;
+            // Van cho phep redirect de user xac thuc bang OTP trong database
         }
+        TempData["EmailSent"] = emailSent;
 
         // Encode pending user data so it survives the redirect
         var pendingBase64 = Convert.ToBase64String(
             System.Text.Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(pendingUser)));
 
-        return RedirectToPage("/Account/VerifyOTP", new { email = pendingUser.Email, hoTen, pending = pendingBase64 });
+        return RedirectToPage("/Account/VerifyOTP", new
+        {
+            email = pendingUser.Email,
+            hoTen,
+            pending = pendingBase64,
+            // Neu email gui loi, truyen OTP qua query de user van xac thuc duoc (dev fallback)
+            devOtp = emailSent ? null : maOtp,
+            emailError = emailSent ? null : emailError
+        });
     }
 
     private IActionResult SaveFormData(string tenDangNhap, string ho, string ten, DateTime? ngaySinh, string sdt, string email)

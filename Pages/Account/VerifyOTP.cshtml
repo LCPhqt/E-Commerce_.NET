@@ -144,6 +144,15 @@
             <div class="error-msg">@ViewData["Error"]</div>
         }
 
+        @if (!string.IsNullOrEmpty(Model.DevOtp))
+        {
+            <div class="error-msg" style="background: rgba(234,179,8,0.12); border:1px solid rgba(234,179,8,0.4); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; color:#fde047;">
+                <strong>Dev fallback (email that bai):</strong><br />
+                Ma OTP cua ban la: <span style="font-size: 1.4rem; font-weight: 700; letter-spacing: 4px; color: #facc15;">@Model.DevOtp</span><br />
+                <small style="opacity: 0.8;">Kiem tra console/log de xem chi tiet loi SMTP.</small>
+            </div>
+        }
+
         <form method="post">
             <input type="hidden" name="EmailHidden" value="@ViewData["Email"]" />
             <div class="otp-inputs">
