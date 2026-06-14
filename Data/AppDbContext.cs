@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<CartItem> CartItems { get; set; } = null!;
     public DbSet<Order> Orders { get; set; } = null!;
     public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
+    public DbSet<XacThucEmail> XacThucEmail { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -29,8 +30,10 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Ten).HasMaxLength(100).IsRequired().IsUnicode(true);
             entity.Property(e => e.NgaySinh).HasColumnType("date");
             entity.Property(e => e.SoDienThoai).HasMaxLength(20).IsUnicode(true);
+            entity.Property(e => e.DiaChi).HasMaxLength(500).IsUnicode(true);
             entity.Property(e => e.Email).HasMaxLength(255).IsUnicode(true);
             entity.Property(e => e.VaiTro).HasMaxLength(20).HasDefaultValue("User").IsUnicode(true);
+            entity.Property(e => e.DaXacThuc).HasDefaultValue(false);
 
             entity.HasIndex(e => e.Email).IsUnique();
         });
@@ -124,6 +127,17 @@ public class AppDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.SanPhamId)
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // XacThucEmail
+        modelBuilder.Entity<XacThucEmail>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TenDangNhap).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.MaXacThuc).HasMaxLength(10).IsRequired();
+            entity.Property(e => e.ThoiGianGui).IsRequired();
+            entity.Property(e => e.ThoiGianHetHan).IsRequired();
+            entity.Property(e => e.DaSuDung).HasDefaultValue(false);
         });
     }
 }

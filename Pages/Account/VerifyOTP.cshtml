@@ -1,0 +1,264 @@
+@page
+@model ECommerceFinalProject.Pages.Account.VerifyOTPModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Xac thuc email";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xac thuc email - ECommerce</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 420px;
+        }
+        .icon {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .icon svg {
+            width: 60px;
+            height: 60px;
+            color: #1a1a1a;
+        }
+        h1 {
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        .email-highlight {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .otp-inputs {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .otp-input {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+        .otp-input:focus {
+            border-color: #1a1a1a;
+        }
+        .btn-verify {
+            width: 100%;
+            padding: 14px;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-verify:hover {
+            background: #333;
+        }
+        .resend {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #666;
+        }
+        .resend a {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .resend a:hover {
+            text-decoration: underline;
+        }
+        .timer {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #999;
+        }
+        .error-msg {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+        </div>
+
+        <h1>Xac thuc email</h1>
+        <p class="subtitle">
+            Ma xac thuc da duoc gui den<br />
+            <span class="email-highlight">@ViewData["Email"]</span>
+        </p>
+
+        @if (!string.IsNullOrEmpty(ViewData["Error"]?.ToString()))
+        {
+            <div class="error-msg">@ViewData["Error"]</div>
+        }
+
+        <form method="post">
+            <input type="hidden" name="EmailHidden" value="@ViewData["Email"]" />
+            <div class="otp-inputs">
+                <input type="text" class="otp-input" maxlength="1" id="otp1" autocomplete="off" inputmode="numeric" />
+                <input type="text" class="otp-input" maxlength="1" id="otp2" autocomplete="off" inputmode="numeric" />
+                <input type="text" class="otp-input" maxlength="1" id="otp3" autocomplete="off" inputmode="numeric" />
+                <input type="text" class="otp-input" maxlength="1" id="otp4" autocomplete="off" inputmode="numeric" />
+                <input type="text" class="otp-input" maxlength="1" id="otp5" autocomplete="off" inputmode="numeric" />
+                <input type="text" class="otp-input" maxlength="1" id="otp6" autocomplete="off" inputmode="numeric" />
+            </div>
+
+            <input type="hidden" name="MaXacThuc" id="hiddenOtp" />
+
+            <button type="submit" class="btn-verify">Xac thuc</button>
+        </form>
+
+        <p class="timer" id="timerDisplay">Ma co hieu luc trong <span id="countdown">5:00</span></p>
+
+        <p class="resend" id="resendSection" style="display:none;">
+            Khong nhan duoc ma?
+            <a href="#" id="resendLink">Gui lai ma moi</a>
+        </p>
+        <p class="resend" id="waitingSection">
+            Vui long cho 60 giay de gui lai...
+        </p>
+    </div>
+
+    <script>
+        const inputs = document.querySelectorAll('.otp-input');
+
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                const value = e.target.value.replace(/\D/g, '');
+                e.target.value = value;
+                if (value && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+                updateHidden();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                pasted.split('').slice(0, 6).forEach((char, i) => {
+                    if (inputs[i]) inputs[i].value = char;
+                });
+                const lastIndex = Math.min(pasted.length - 1, inputs.length - 1);
+                if (inputs[lastIndex]) inputs[lastIndex].focus();
+                updateHidden();
+            });
+        });
+
+        function updateHidden() {
+            document.getElementById('hiddenOtp').value =
+                Array.from(inputs).map(i => i.value).join('');
+        }
+
+        // Countdown timer
+        let secondsLeft = parseInt('@ViewData["SecondsLeft"]');
+        const timerEl = document.getElementById('countdown');
+        const resendSection = document.getElementById('resendSection');
+        const waitingSection = document.getElementById('waitingSection');
+
+        const countdownInterval = setInterval(() => {
+            if (secondsLeft <= 0) {
+                clearInterval(countdownInterval);
+                timerEl.textContent = 'Het han';
+                resendSection.style.display = 'block';
+                waitingSection.style.display = 'none';
+            } else {
+                const m = Math.floor(secondsLeft / 60);
+                const s = secondsLeft % 60;
+                timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+                secondsLeft--;
+            }
+        }, 1000);
+
+        // Resend
+        let waitSeconds = 60;
+        const waitingInterval = setInterval(() => {
+            waitSeconds--;
+            if (waitSeconds <= 0) {
+                clearInterval(waitingInterval);
+                waitingSection.textContent = 'Da san sang gui lai.';
+            } else {
+                waitingSection.textContent = `Vui long cho ${waitSeconds} giay de gui lai...`;
+            }
+        }, 1000);
+
+        document.getElementById('resendLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            fetch(`?handler=Resend&email=@Uri.EscapeDataString(ViewData["Email"]?.ToString() ?? "")`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        secondsLeft = 300;
+                        waitSeconds = 60;
+                        resendSection.style.display = 'none';
+                        timerEl.textContent = '5:00';
+                        clearInterval(countdownInterval);
+                        clearInterval(waitingInterval);
+                        inputs.forEach(i => i.value = '');
+                        document.getElementById('hiddenOtp').value = '';
+                        inputs[0].focus();
+                    } else {
+                        alert(data.message || 'Loi gui lai ma');
+                    }
+                });
+        });
+    </script>
+</body>
+</html>

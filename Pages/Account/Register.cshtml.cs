@@ -3,14 +3,20 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ECommerceFinalProject.Data;
 using ECommerceFinalProject.Models;
+using ECommerceFinalProject.Services;
 
 namespace ECommerceFinalProject.Pages.Account;
 
 public class RegisterModel : PageModel
 {
     private readonly AppDbContext _context;
+    private readonly IEmailService _emailService;
 
-    public RegisterModel(AppDbContext context) => _context = context;
+    public RegisterModel(AppDbContext context, IEmailService emailService)
+    {
+        _context = context;
+        _emailService = emailService;
+    }
 
     public IActionResult OnGet()
     {
@@ -33,32 +39,33 @@ public class RegisterModel : PageModel
             string.IsNullOrWhiteSpace(Ten) || string.IsNullOrWhiteSpace(Email) ||
             string.IsNullOrWhiteSpace(MatKhau))
         {
-            ModelState.AddModelError("", "Vui lòng điền đầy đủ thông tin bắt buộc.");
+            ModelState.AddModelError("", "Vui long dien day du thong tin bat buoc.");
             return SaveFormData(TenDangNhap, Ho, Ten, NgaySinh, SoDienThoai, Email);
         }
 
         if (MatKhau != XacNhanMatKhau)
         {
-            ModelState.AddModelError("", "Mật khẩu xác nhận không khớp.");
+            ModelState.AddModelError("", "Mat khau xac nhan khong khop.");
             return SaveFormData(TenDangNhap, Ho, Ten, NgaySinh, SoDienThoai, Email);
         }
 
         if (MatKhau.Length < 6)
         {
-            ModelState.AddModelError("", "Mật khẩu phải có ít nhất 6 ký tự.");
+            ModelState.AddModelError("", "Mat khau phai co it nhat 6 ky tu.");
             return SaveFormData(TenDangNhap, Ho, Ten, NgaySinh, SoDienThoai, Email);
         }
 
         bool exists = await _context.NguoiDung
-            .AnyAsync(u => u.TenDangNhap == TenDangNhap || u.Email == Email);
+            .AnyAsync(u => u.TenDangNhap == TenDangNhap || u.Email == Email.ToLower().Trim());
 
         if (exists)
         {
-            ModelState.AddModelError("", "Tên đăng nhập hoặc Email đã được sử dụng.");
+            ModelState.AddModelError("", "Ten dang nhap hoac Email da duoc su dung.");
             return SaveFormData(TenDangNhap, Ho, Ten, NgaySinh, SoDienThoai, Email);
         }
 
-        var user = new NguoiDung
+        // Luu user tam thoi vao TempData de xac thuc
+        var pendingUser = new NguoiDung
         {
             TenDangNhap = TenDangNhap.Trim(),
             Ho = Ho.Trim(),
@@ -69,11 +76,38 @@ public class RegisterModel : PageModel
             MatKhau = BCrypt.Net.BCrypt.HashPassword(MatKhau)
         };
 
-        _context.NguoiDung.Add(user);
+        TempData["PendingRegister"] = System.Text.Json.JsonSerializer.Serialize(pendingUser);
+        TempData["Email"] = pendingUser.Email;
+
+        // Tao OTP
+        var maOtp = new Random().Next(100000, 999999).ToString();
+        _context.XacThucEmail.Add(new XacThucEmail
+        {
+            TenDangNhap = pendingUser.TenDangNhap,
+            MaXacThuc = maOtp,
+            ThoiGianGui = DateTime.Now,
+            ThoiGianHetHan = DateTime.Now.AddMinutes(5),
+            DaSuDung = false
+        });
         await _context.SaveChangesAsync();
 
-        TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
-        return RedirectToPage("/Account/Login");
+        // Gui email (bat loi de van cho phep xac thuc neu email loi)
+        var hoTen = $"{pendingUser.Ho} {pendingUser.Ten}".Trim();
+        TempData["HoTen"] = hoTen;
+        try
+        {
+            await _emailService.GuiMaXacThucAsync(pendingUser.Email ?? Email, maOtp, hoTen);
+        }
+        catch
+        {
+            // Email loi, van cho phep xac thuc bang OTP trong database
+        }
+
+        // Encode pending user data so it survives the redirect
+        var pendingBase64 = Convert.ToBase64String(
+            System.Text.Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(pendingUser)));
+
+        return RedirectToPage("/Account/VerifyOTP", new { email = pendingUser.Email, hoTen, pending = pendingBase64 });
     }
 
     private IActionResult SaveFormData(string tenDangNhap, string ho, string ten, DateTime? ngaySinh, string sdt, string email)
