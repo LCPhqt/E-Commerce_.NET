@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RollForward>LatestMajor</RollForward>
+    <UserSecretsId>ecomerce-final-project-secrets-2026</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using ECommerceFinalProject.Data;
 using ECommerceFinalProject.Models;
 
@@ -12,10 +13,17 @@ namespace ECommerceFinalProject.Pages.Customer;
 public class ProfileModel : PageModel
 {
     private readonly AppDbContext _context;
+    private readonly IMemoryCache _cache;
 
-    public ProfileModel(AppDbContext context)
+    public ProfileModel(AppDbContext context, IMemoryCache cache)
     {
         _context = context;
+        _cache = cache;
+    }
+    private void InvalidateAvatarCache(string username)
+    {
+        if (!string.IsNullOrEmpty(username))
+            _cache.Remove($"user_avatar_{username}");
     }
 
     [BindProperty]
@@ -112,6 +120,7 @@ public class ProfileModel : PageModel
             });
 
         TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
+        InvalidateAvatarCache(CurrentUser.TenDangNhap);
         return RedirectToPage();
     }
 
@@ -164,6 +173,7 @@ public class ProfileModel : PageModel
 
         CurrentUser.AvatarUrl = $"/uploads/avatars/{fileName}";
         await _context.SaveChangesAsync();
+        InvalidateAvatarCache(CurrentUser.TenDangNhap);
 
         TempData["AvatarSuccess"] = "Cập nhật ảnh đại diện thành công!";
         return RedirectToPage();
@@ -187,6 +197,7 @@ public class ProfileModel : PageModel
             }
             CurrentUser.AvatarUrl = null;
             await _context.SaveChangesAsync();
+            InvalidateAvatarCache(CurrentUser.TenDangNhap);
         }
 
         TempData["AvatarSuccess"] = "Đã xóa ảnh đại diện.";

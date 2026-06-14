@@ -72,7 +72,7 @@
 
             <div class="sidebar-footer">
                 <div class="sidebar-user">
-                    <i class="bi bi-person-circle"></i>
+                    @await Component.InvokeAsync("UserAvatar", new { size = 36, showName = false, shape = "circle" })
                     <div>
                         <span class="user-name">@User.FindFirst("FullName")?.Value</span>
                         <span class="user-role">Quản trị viên</span>
@@ -92,8 +92,8 @@
                         <span class="topbar-title">@ViewData["Title"]</span>
                     </div>
                     <div class="topbar-right">
-                        <span class="topbar-user">
-                            <i class="bi bi-person-circle"></i> @User.FindFirst("FullName")?.Value
+                        <span class="topbar-user d-flex align-items-center" style="gap:0.5rem;">
+                            @await Component.InvokeAsync("UserAvatar", new { size = 32, showName = true, shape = "circle" })
                         </span>
                         <span class="admin-badge">Admin</span>
                     </div>

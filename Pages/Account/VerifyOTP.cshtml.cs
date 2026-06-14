@@ -24,12 +24,16 @@ public class VerifyOTPModel : PageModel
 
     public string Email { get; set; } = string.Empty;
     public string HoTen { get; set; } = string.Empty;
+    public string? DevOtp { get; set; }
+    public string? EmailError { get; set; }
 
     public IActionResult OnGet()
     {
         var email = Request.Query["email"].ToString();
         var hoTen = Request.Query["hoTen"].ToString();
         var pendingBase64 = Request.Query["pending"].ToString();
+        var devOtp = Request.Query["devOtp"].ToString();
+        var emailError = Request.Query["emailError"].ToString();
 
         if (string.IsNullOrEmpty(email))
         {
@@ -42,6 +46,8 @@ public class VerifyOTPModel : PageModel
 
         Email = email;
         HoTen = hoTen;
+        DevOtp = string.IsNullOrEmpty(devOtp) ? null : devOtp;
+        EmailError = string.IsNullOrEmpty(emailError) ? null : emailError;
         TempData["Email"] = email;
         TempData["HoTen"] = hoTen;
 

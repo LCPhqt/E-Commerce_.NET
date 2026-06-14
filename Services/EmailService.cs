@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 
 namespace ECommerceFinalProject.Services;
@@ -9,20 +10,36 @@ namespace ECommerceFinalProject.Services;
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
+    private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IConfiguration configuration)
+    public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
     {
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task GuiMaXacThucAsync(string email, string maXacThuc, string hoTen)
     {
         var smtp = _configuration.GetSection("SmtpSettings");
 
+        var server = smtp["Server"];
+        var portRaw = smtp["Port"];
+        var username = smtp["Username"];
+        var password = smtp["Password"];
+        var senderEmail = smtp["SenderEmail"];
+        var senderName = smtp["SenderName"] ?? "ECommerce Shop";
+
+        _logger.LogInformation("[EmailService] Sending OTP to {Email} via {Server}:{Port} as {Sender}",
+            email, server, portRaw, senderEmail);
+
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(senderEmail))
+        {
+            _logger.LogError("[EmailService] SmtpSettings is missing Username/Password/SenderEmail. Check 'dotnet user-secrets list'.");
+            throw new InvalidOperationException("SMTP chua duoc cau hinh. Hay chay 'dotnet user-secrets set' cho Username/Password/SenderEmail.");
+        }
+
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(
-            smtp["SenderName"] ?? "ECommerce Shop",
-            smtp["SenderEmail"]));
+        message.From.Add(new MailboxAddress(senderName, senderEmail));
         message.To.Add(new MailboxAddress(hoTen, email));
         message.Subject = "[ECommerce] Ma xac thuc dang nhap";
 
@@ -48,16 +65,25 @@ public class EmailService : IEmailService
         message.Body = builder.ToMessageBody();
 
         using var client = new SmtpClient();
-        await client.ConnectAsync(
-            smtp["Server"],
-            int.Parse(smtp["Port"] ?? "587"),
-            SecureSocketOptions.StartTls);
+        try
+        {
+            await client.ConnectAsync(
+                server,
+                int.Parse(portRaw ?? "587"),
+                SecureSocketOptions.StartTls);
 
-        await client.AuthenticateAsync(
-            smtp["Username"],
-            smtp["Password"]);
+            await client.AuthenticateAsync(username, password);
 
-        await client.SendAsync(message);
-        await client.DisconnectAsync(true);
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+
+            _logger.LogInformation("[EmailService] OTP sent successfully to {Email}", email);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[EmailService] Failed to send OTP to {Email}. Type: {Type}, Message: {Message}",
+                email, ex.GetType().FullName, ex.Message);
+            throw;
+        }
     }
 }

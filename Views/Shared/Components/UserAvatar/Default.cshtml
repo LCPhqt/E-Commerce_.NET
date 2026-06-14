@@ -1,0 +1,68 @@
+@{
+    var shapeClass = Model.Shape == "square" ? "user-avatar-square" : "user-avatar-circle";
+    var sizeStyle = $"width:{Model.Size}px;height:{Model.Size}px;";
+    var fontSize = Model.Size <= 28 ? "0.8rem" : (Model.Size <= 40 ? "0.95rem" : "1.1rem");
+    var nameFontSize = Model.Size <= 28 ? "0.8rem" : "0.85rem";
+
+    // Tính chữ cái đầu để dùng làm fallback
+    string initial = "?";
+    if (!string.IsNullOrWhiteSpace(Model.FullName))
+    {
+        var trimmed = Model.FullName.Trim();
+        initial = trimmed.Substring(0, 1).ToUpper();
+    }
+}
+
+@if (!string.IsNullOrEmpty(Model.AvatarUrl))
+{
+    <img src="@Model.AvatarUrl"
+         alt="Avatar"
+         class="user-avatar @shapeClass"
+         style="@sizeStyle"
+         onerror="this.onerror=null;this.outerHTML='&lt;div class=&quot;user-avatar @shapeClass avatar-fallback&quot; style=&quot;@sizeStyle font-size:@fontSize&quot;&gt;@initial&lt;/div&gt;';" />
+}
+else
+{
+    <div class="user-avatar @shapeClass avatar-fallback" style="@sizeStyle font-size:@fontSize">
+        @initial
+    </div>
+}
+
+@if (Model.ShowName)
+{
+    <span class="user-avatar-name" style="font-size:@nameFontSize">@Model.FullName</span>
+}
+
+<style>
+    .user-avatar {
+        display: inline-block;
+        object-fit: cover;
+        flex-shrink: 0;
+        vertical-align: middle;
+        border: 1.5px solid rgba(99, 102, 241, 0.25);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .user-avatar-circle { border-radius: 50%; }
+    .user-avatar-square { border-radius: 8px; }
+    .user-avatar.avatar-fallback {
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Outfit', sans-serif;
+    }
+    .user-avatar:hover {
+        transform: scale(1.05);
+        box-shadow: 0 3px 8px rgba(99, 102, 241, 0.25);
+    }
+    .user-avatar-name {
+        margin-left: 0.5rem;
+        color: inherit;
+        font-weight: 500;
+    }
+</style>
